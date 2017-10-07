@@ -9,36 +9,39 @@
 #import "SJDownloadServer.h"
 #import "SJTsEntity.h"
 #import <objc/message.h>
+#import <HTTPServer.h>
 
 NSErrorDomain const SJDownloadErrorDomain = @"SJDownloadErrorDomain";
 
 NSErrorUserInfoKey const SJDownloadErrorInfoKey = @"SJDownloadErrorInfoKey";
 
-inline static NSError *_downloadError(SJDownloadErrorCode code, NSString *errorMsg) {
+inline static NSError *_downloadServerError(SJDownloadErrorCode code, NSString *errorMsg) {
     return [NSError errorWithDomain:SJDownloadErrorDomain code:code userInfo:@{SJDownloadErrorInfoKey:@"msg"}];
 }
 
-inline static NSURL *_getTssDownloadURLStr(NSString *URLStr, SJDownloadMode mode) {
-    NSURLComponents *components = [NSURLComponents componentsWithString:URLStr];
-    NSString *modeStr;
-    NSString *path;
+inline static NSString *_getModeStr(SJDownloadMode mode) {
+    NSString *modeStr = nil;
     switch (mode) {
         case SJDownloadMode450: {
-            path = @"450";
             modeStr = @"450.m3u8";
         }
             break;
         case SJDownloadMode200: {
-            path = @"200";
             modeStr = @"200.m3u8";
         }
             break;
         case SJDownloadMode850: {
-            path = @"850";
             modeStr = @"850.m3u8";
         }
             break;
     }
+    return modeStr;
+}
+
+inline static NSURL *_getTssDownloadURLStr(NSString *URLStr, SJDownloadMode mode) {
+    NSURLComponents *components = [NSURLComponents componentsWithString:URLStr];
+    NSString *modeStr = _getModeStr(mode);
+    NSString *path = [modeStr stringByDeletingPathExtension];
     NSMutableArray<NSString *> *pathComponentsM = components.path.pathComponents.mutableCopy;
     pathComponentsM[pathComponentsM.count - 1] = modeStr;
     [pathComponentsM enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -85,6 +88,16 @@ inline static void _createFileAtPath(NSString *filePath) {
     [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
+inline static BOOL _generateLocalM3U8File(NSArray<SJTsEntity *> *tss, NSString *savePath) {
+    NSMutableArray<NSString *> *m3u8ContentM = [NSMutableArray new];
+    [m3u8ContentM addObject:@"#EXTM3U"];
+    [tss enumerateObjectsUsingBlock:^(SJTsEntity * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [m3u8ContentM addObject:[NSString stringWithFormat:@"#EXTINF:%d,", obj.duration]];
+        [m3u8ContentM addObject:obj.name];
+    }];
+    [m3u8ContentM addObject:@"#EXT-X-ENDLIST"];
+    return [m3u8ContentM writeToFile:savePath atomically:YES];
+}
 
 
 
@@ -95,7 +108,7 @@ inline static void _createFileAtPath(NSString *filePath) {
 @interface SJDownloadServer ()
 
 @property (nonatomic, strong, readwrite) NSMutableArray<SJTsEntity *> *downloadingTsM;
-
+@property (nonatomic, strong, readonly)  HTTPServer *httpServer;
 
 @end
 
@@ -112,28 +125,28 @@ inline static void _createFileAtPath(NSString *filePath) {
 
 @interface SJTsEntity (SJDownloadServerAdd)
 
-@property (nonatomic, assign, readwrite) float totalSize;
-@property (nonatomic, assign, readwrite) float downloadSize;
+@property (nonatomic, assign, readwrite) long long totalSize;
+@property (nonatomic, assign, readwrite) long long downloadSize;
 @property (nonatomic, assign, readonly)  float downloadProgress;
-@property (nonatomic, strong, readonly) NSOutputStream *outputStream;
+@property (nonatomic, strong, readonly)  NSOutputStream *outputStream;
 
 @end
 
 @implementation SJTsEntity (SJDownloadServerAdd)
 
-- (float)totalSize {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
+- (long long)totalSize {
+    return [objc_getAssociatedObject(self, _cmd) longLongValue];
 }
 
-- (void)setTotalSize:(float)totalSize {
+- (void)setTotalSize:(long long)totalSize {
     objc_setAssociatedObject(self, @selector(totalSize), @(totalSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (float)downloadSize {
-    return [objc_getAssociatedObject(self, _cmd) floatValue];
+- (long long)downloadSize {
+    return [objc_getAssociatedObject(self, _cmd) longLongValue];
 }
 
-- (void)setDownloadSize:(float)downloadSize {
+- (void)setDownloadSize:(long long)downloadSize {
     objc_setAssociatedObject(self, @selector(downloadSize), @(downloadSize), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
@@ -158,7 +171,7 @@ inline static void _createFileAtPath(NSString *filePath) {
 
 @interface NSURLSessionTask (SJDownloadServerAdd)
 
-@property (nonatomic, weak, readwrite) SJTsEntity *ts;
+@property (nonatomic, strong, readwrite) SJTsEntity *ts;
 @property (nonatomic, copy, readwrite) void(^__nullable progressBlock)(SJTsEntity *ts, float progress);
 @property (nonatomic, copy, readwrite) void(^__nullable completionBlock)(SJTsEntity *ts, NSString *dataPath);
 @property (nonatomic, copy, readwrite) void(^__nullable errorBlock)(SJTsEntity *ts, NSError *error);
@@ -206,7 +219,7 @@ inline static void _createFileAtPath(NSString *filePath) {
 
 
 
-@interface SJDownloadServer (Download)<NSURLSessionDelegate>
+@interface SJDownloadServer (Download) <NSURLSessionDelegate>
 
 @property (nonatomic, strong, readonly) NSURLSession *session;
 
@@ -254,7 +267,7 @@ inline static void _createFileAtPath(NSString *filePath) {
     [self.downloadingTsM removeObject:dataTask.ts];
     
     if ( error ) {
-        if ( dataTask.errorBlock ) dataTask.errorBlock(dataTask.ts, _downloadError(SJDownloadErrorCodeDownloadError, @"下载失败! 请检查网络."));
+        if ( dataTask.errorBlock ) dataTask.errorBlock(dataTask.ts, _downloadServerError(SJDownloadErrorCodeDownloadError, @"下载失败! 请检查网络."));
     }
     else {
         NSString *cachePath = _getTsCachePath(dataTask.ts.remoteURL, dataTask.ts.name);
@@ -288,7 +301,19 @@ inline static void _createFileAtPath(NSString *filePath) {
     NSString *cacheFolder = _getCacheFolder();
     if ( ![[NSFileManager defaultManager] fileExistsAtPath:downloadFolder] ) _createFileAtPath(downloadFolder);
     if ( ![[NSFileManager defaultManager] fileExistsAtPath:cacheFolder] ) _createFileAtPath(cacheFolder);
+    if ( ![self.httpServer start:nil] ) { NSLog(@"服务器启动失败!"); return nil;}
     return self;
+}
+
+@synthesize httpServer = _httpServer;
+
+- (HTTPServer *)httpServer {
+    if ( _httpServer ) return _httpServer;
+    _httpServer = [HTTPServer new];
+    [_httpServer setType:@"_http._tcp."];
+    [_httpServer setPort:54321];
+    [_httpServer setDocumentRoot:_getDownloadFolder()];
+    return _httpServer;
 }
 
 - (void)downloadWithURLStr:(NSString *)URLStr downloadProgress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *dataPath))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
@@ -297,19 +322,19 @@ inline static void _createFileAtPath(NSString *filePath) {
 
 - (void)downloadWithURLStr:(NSString *)URLStr downloadMode:(SJDownloadMode)mode downloadProgress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *dataPath))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
     if ( 0 == URLStr.length ) {
-        if ( errorBlock ) errorBlock(_downloadError(SJDownloadErrorCodeURLError, @"下载地址为空, 无法下载!"));
+        if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"下载地址为空, 无法下载!"));
         return;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         NSURL *downloadURL = _getTssDownloadURLStr(URLStr, mode);
         if ( nil == downloadURL ) {
-            if ( errorBlock ) errorBlock(_downloadError(SJDownloadErrorCodeURLError, @"路径转换出错, 无法下载!"));
+            if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"路径转换出错, 无法下载!"));
             return ;
         }
         NSError *error = nil;
         NSString *tsDataStr = [NSString stringWithContentsOfURL:downloadURL encoding:NSUTF8StringEncoding error:&error];
         if ( error ) {
-            if ( errorBlock ) errorBlock(_downloadError(SJDownloadErrorCodeUnknown, [NSString stringWithFormat:@"网络错误, 无法下载! 请检查URL是否正确:%@", downloadURL.absoluteString]));
+            if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeUnknown, [NSString stringWithFormat:@"网络错误, 无法下载! 请检查ATS||URL是否正确:%@", downloadURL.absoluteString]));
             return;
         }
         
@@ -326,20 +351,20 @@ inline static void _createFileAtPath(NSString *filePath) {
             int duration = [tsDurationStr substringFromIndex:8].intValue;
             NSURL *remoteURL = _getTsRemoteURL(downloadURL, tsName);
             if ( !remoteURL ) {
-                if ( errorBlock ) errorBlock(_downloadError(SJDownloadErrorCodeURLError, @"拼接Ts下载路径出错！请检查."));
+                if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"拼接Ts下载路径出错！请检查."));
                 *stop = YES;
                 return;
             }
             SJTsEntity *ts = [[SJTsEntity alloc] initWithDuration:duration remoteURL:remoteURL name:tsName];
             if ( !ts ) {
-                if ( errorBlock ) errorBlock(_downloadError(SJDownloadErrorCodeUnknown, @"..."));
+                if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeUnknown, @"..."));
                 *stop = YES;
                 return;
             }
             [tsM addObject:ts];
         }];
         
-        self.downloadingTsM = tsM;
+        self.downloadingTsM = tsM.mutableCopy;
         __weak typeof (self) _self = self;
         [tsM enumerateObjectsUsingBlock:^(SJTsEntity * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [self downloadDataWithTs:obj downloadProgress:^(SJTsEntity *ts, float progress) {
@@ -347,12 +372,15 @@ inline static void _createFileAtPath(NSString *filePath) {
             } completion:^(SJTsEntity *ts, NSString *dataPath) {
                 __strong typeof (_self) self = _self;
                 if ( !self ) return;
-                if ( 0 == self.downloadingTsM.count ) {
-                    NSLog(@"文件全部下载完成");
-                    NSString *tssDownloadFolder = _getTssDownloadFolder(downloadURL);
-                    NSString *tssCacheFolder = _getTssCacheFolder(downloadURL);
-                    NSError *error;
-                    [[NSFileManager defaultManager] moveItemAtPath:tssCacheFolder toPath:tssDownloadFolder error:&error];
+                if ( 0 != self.downloadingTsM.count ) return;
+                NSLog(@"文件全部下载完成");
+                NSString *tssDownloadFolder = _getTssDownloadFolder(downloadURL);
+                NSString *tssCacheFolder = _getTssCacheFolder(downloadURL);
+                NSError *error;
+                [[NSFileManager defaultManager] moveItemAtPath:tssCacheFolder toPath:tssDownloadFolder error:&error];
+                NSString *modeStr = _getModeStr(mode);
+                if ( !_generateLocalM3U8File(tsM, [_getTssDownloadFolder(downloadURL) stringByAppendingPathComponent:modeStr]) ) {
+                    if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeFileOperationError, @"生产m3u8文件失败, 请检查路径是否正确"));
                 }
             } errorBlock:^(SJTsEntity *ts, NSError *error) {
                 
@@ -360,6 +388,5 @@ inline static void _createFileAtPath(NSString *filePath) {
         }];
     });
 }
-
 
 @end

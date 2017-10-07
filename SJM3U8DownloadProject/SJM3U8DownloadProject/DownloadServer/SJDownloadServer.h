@@ -24,6 +24,7 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
     SJDownloadErrorCodeUnknown,
     SJDownloadErrorCodeURLError,
     SJDownloadErrorCodeDownloadError,
+    SJDownloadErrorCodeFileOperationError
 };
 
 
