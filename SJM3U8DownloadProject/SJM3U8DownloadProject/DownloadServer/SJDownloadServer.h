@@ -32,12 +32,29 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 
 + (instancetype)sharedServer;
 
+@end
+
+
+@interface SJDownloadServer (DownloadMethods)
+
 /*!
  *  default mode is 450
  */
 - (void)downloadWithURLStr:(NSString *)URLStr downloadProgress:(void(^ __nullable)(float progress))progressBlock completion:(void(^__nullable)(NSString *dataPath))completionBlock errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
 - (void)downloadWithURLStr:(NSString *)URLStr downloadMode:(SJDownloadMode)mode downloadProgress:(void(^__nullable)(float progress))progressBlock completion:(void(^__nullable)(NSString *dataPath))completionBlock errorBlock:(void(^__nullable)(NSError *error))errorBlock;
+
+- (void)cancelDownloadWithURLStr:(NSString *)URLStr completion:(void(^__nullable)(void))completionBlock;
+
+@end
+
+
+
+@interface SJDownloadServer (FileOperation)
+
+- (NSString *)cacheFolderPath;
+
+- (NSString *)downloadFolderPath;
 
 @end
 

@@ -18,11 +18,11 @@
 
 - (IBAction)clickedDoanload:(id)sender {
     [[SJDownloadServer sharedServer] downloadWithURLStr:@"http://asp.cntv.lxdns.com/asp/hls/main/0303000a/3/default/f8c28211-dcc2-11e4-9584-21fa84a4ab6e/main.m3u8?maxbr=850" downloadMode:SJDownloadMode450 downloadProgress:^(float progress) {
-        
+        NSLog(@"Ing: %.02f", progress);
     } completion:^(NSString *dataPath) {
-        
+        NSLog(@"End: %@", dataPath);
     } errorBlock:^(NSError *error) {
-        NSLog(@"%@", error.userInfo[SJDownloadErrorInfoKey]);
+        NSLog(@"Error: %@", error.userInfo[SJDownloadErrorInfoKey]);
     }];
 }
 
