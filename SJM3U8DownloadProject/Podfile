@@ -9,7 +9,7 @@ target 'SJM3U8DownloadProject' do
  
   pod 'CocoaHTTPServer' 
   pod 'SJDBMap'
-
+  pod 'SJVideoPlayer'
   target 'SJM3U8DownloadProjectTests' do
     inherit! :search_paths
     # Pods for testing

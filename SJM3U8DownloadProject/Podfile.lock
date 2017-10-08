@@ -9,18 +9,99 @@ PODS:
   - CocoaLumberjack/Default (3.3.0)
   - CocoaLumberjack/Extensions (3.3.0):
     - CocoaLumberjack/Default
+  - Masonry (1.1.0)
+  - SJBorderLineView (0.0.3)
   - SJDBMap (1.1.3)
+  - SJPrompt (0.0.2):
+    - Masonry
+  - SJSlider (0.0.9):
+    - Masonry
+  - SJVideoPlayer (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayer/Category (= 0.0.9)
+    - SJVideoPlayer/Constant (= 0.0.9)
+    - SJVideoPlayer/Control (= 0.0.9)
+    - SJVideoPlayer/Loading (= 0.0.9)
+    - SJVideoPlayer/Model (= 0.0.9)
+    - SJVideoPlayer/Present (= 0.0.9)
+    - SJVideoPlayer/VideoPlayer (= 0.0.9)
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Category (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Constant (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Control (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayer/Category
+    - SJVideoPlayer/Constant
+    - SJVideoPlayer/Loading
+    - SJVideoPlayer/Model
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Loading (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Model (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/Present (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayer/Category
+    - SJVideoPlayer/Constant
+    - SJVideoPlayer/Control
+    - SJVideoPlayerBackGR
+  - SJVideoPlayer/VideoPlayer (0.0.9):
+    - Masonry
+    - SJBorderLineView
+    - SJPrompt
+    - SJSlider
+    - SJVideoPlayer/Constant
+    - SJVideoPlayer/Control
+    - SJVideoPlayer/Loading
+    - SJVideoPlayer/Model
+    - SJVideoPlayer/Present
+    - SJVideoPlayerBackGR
+  - SJVideoPlayerBackGR (1.0.2)
 
 DEPENDENCIES:
   - CocoaHTTPServer
   - SJDBMap
+  - SJVideoPlayer
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 7eadd3f59e1a6c84e2aefc93e9ff7b55156fe174
   CocoaHTTPServer: 5624681fc3473d43b18202f635f9b3abb013b530
   CocoaLumberjack: 3c8c74683302f9012bb168e1c4b7ae3c0b558431
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  SJBorderLineView: 791d0ba12a8dd7be28b898e0c60b9e07b7f5c62f
   SJDBMap: a463cdc3744b579ff0dba2b842fa710a72a0961a
+  SJPrompt: eb3e7efb0cf796e114d1838695deb66f2cd18a7d
+  SJSlider: c637f70af30f0e80dea0f092307260faa35913e2
+  SJVideoPlayer: 563d3538358e53c75f02d58db83284551c11ead1
+  SJVideoPlayerBackGR: 7759e96e0b7c0633b54b2cf270519c7158cb2ce9
 
-PODFILE CHECKSUM: 489759cc1a98ec6d7466c3a211bb377a2fa0ca5d
+PODFILE CHECKSUM: 7b1c1f642309c85f5933a53bf07ee85535b81d7c
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0.beta.1

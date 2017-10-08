@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -24,14 +25,43 @@
                                     <action selector="clickedDoanload:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PLp-O6-2c0"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qDm-a3-gbv">
+                                <rect key="frame" x="166" y="283" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5zD-eJ-ghu">
+                                <rect key="frame" x="159.5" y="394" width="55" height="30"/>
+                                <state key="normal" title="Resume"/>
+                                <connections>
+                                    <action selector="resume:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GxB-Yk-w2v"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rgy-mE-hCb">
+                                <rect key="frame" x="166" y="356" width="42" height="30"/>
+                                <state key="normal" title="Pause"/>
+                                <connections>
+                                    <action selector="pause:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Rt1-9d-5xp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="5zD-eJ-ghu" firstAttribute="top" secondItem="rgy-mE-hCb" secondAttribute="bottom" constant="8" id="EJD-zD-JXD"/>
+                            <constraint firstItem="qDm-a3-gbv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Tt1-wW-dob"/>
                             <constraint firstItem="zeo-4H-XVk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Y5o-g8-TOi"/>
+                            <constraint firstItem="rgy-mE-hCb" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Zd9-GD-gc5"/>
+                            <constraint firstItem="zeo-4H-XVk" firstAttribute="top" secondItem="qDm-a3-gbv" secondAttribute="bottom" constant="14" id="dHX-Zm-x0m"/>
+                            <constraint firstItem="rgy-mE-hCb" firstAttribute="top" secondItem="zeo-4H-XVk" secondAttribute="bottom" constant="8" id="gvS-oV-4Wq"/>
+                            <constraint firstItem="5zD-eJ-ghu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="uOk-Tf-KnW"/>
                             <constraint firstItem="zeo-4H-XVk" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="vMl-nw-P5T"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="progressLabel" destination="qDm-a3-gbv" id="gPy-OG-bN3"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

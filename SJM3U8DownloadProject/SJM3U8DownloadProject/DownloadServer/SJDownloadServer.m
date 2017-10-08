@@ -90,6 +90,13 @@ inline static void _createFileAtPath(NSString *filePath) {
     [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
+inline static int _localServerPort(void) {
+    return 54321;
+}
+
+inline static NSString *_localServerPath(void) {
+    return [NSString stringWithFormat:@"http://127.0.0.1:%d", _localServerPort()];
+}
 
 #pragma mark -
 
@@ -128,7 +135,7 @@ inline static void _createFileAtPath(NSString *filePath) {
     if ( _httpServer ) return _httpServer;
     _httpServer = [HTTPServer new];
     [_httpServer setType:@"_http._tcp."];
-    [_httpServer setPort:54321];
+    [_httpServer setPort:_localServerPort()];
     [_httpServer setDocumentRoot:_getDownloadFolder()];
     return _httpServer;
 }
@@ -327,7 +334,8 @@ inline static void _createFileAtPath(NSString *filePath) {
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
-    dataTask.ts.totalSize = [response.allHeaderFields[@"Content-Length"] longLongValue];
+    
+    dataTask.ts.totalSize = response.expectedContentLength;
     [dataTask.ts.outputStream open];
     completionHandler(NSURLSessionResponseAllow);
 }
@@ -446,7 +454,8 @@ inline static void _createFileAtPath(NSString *filePath) {
                     NSError *error;
                     [[NSFileManager defaultManager] moveItemAtPath:tssCacheFolder toPath:tssDownloadFolder error:&error];
                     if ( progressBlock ) progressBlock(1.0f);
-                    if ( completionBlock ) completionBlock(tssDownloadFolder);
+                    NSString *localServerPath = [NSString stringWithFormat:@"%@/%@/%@", _localServerPath(), tssDownloadFolder.lastPathComponent, _getModeStr(mode)];
+                    if ( completionBlock ) completionBlock(localServerPath);
                     [timer invalidate];
                 } errorBlock:^(SJTsEntity *ts, NSError *error) {
                     [timer invalidate];

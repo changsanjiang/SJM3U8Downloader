@@ -12,24 +12,31 @@
 #import "SJUser.h"
 #import "SJVideoInfo.h"
 #import <SJDBMap/SJDBMap.h>
+#import <SJVideoPlayer/SJVideoPlayer.h>
+#import <Masonry.h>
 
 @interface ViewController ()
 
 @property (nonatomic, strong, readonly) SJUser *xiaoMing;
 @property (nonatomic, strong, readonly) SJVideoInfo *video;
 
+@property (weak, nonatomic) IBOutlet UILabel *progressLabel;
+
 @end
 
 @implementation ViewController
 
+
+/*!
+ *  开始下载
+ */
 - (IBAction)clickedDoanload:(id)sender {
     
     __weak typeof(self) _self = self;
     [[SJDownloadServer sharedServer] downloadWithURLStr:self.video.remoteURLStr downloadMode:SJDownloadMode450 downloadProgress:^(float progress) {
-        NSLog(@"Ing: %.02f", progress);
+        _progressLabel.text = [NSString stringWithFormat:@"%0.2f", progress];
     } completion:^(NSString *dataPath) {
-        NSLog(@"End: %@", dataPath);
-        
+        NSLog(@"Download End: %@", dataPath);
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         self.video.fileSavePath = dataPath;
@@ -37,11 +44,25 @@
             if ( result ) NSLog(@"下载成功!");
             else NSLog(@"下载失败!");
         }];
-        
+
+        [SJVideoPlayer sharedPlayer].assetURL = [NSURL URLWithString:dataPath];
     } errorBlock:^(NSError *error) {
-        NSLog(@"Error: %@", error.userInfo[SJDownloadErrorInfoKey]);
+        NSLog(@"Downlaod Error: %@", error.userInfo[SJDownloadErrorInfoKey]);
     }];
 }
+
+/*!
+ *  暂停下载
+ */
+- (IBAction)pause:(id)sender {
+}
+
+/*!
+ *  恢复下载
+ */
+- (IBAction)resume:(id)sender {
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -94,6 +115,12 @@
     
 //    NSLog(@"%@", dataStr);
     
+    [self.view addSubview:[SJVideoPlayer sharedPlayer].view];
+    [[SJVideoPlayer sharedPlayer].view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.offset(0);
+        make.height.equalTo([SJVideoPlayer sharedPlayer].view.mas_width).multipliedBy(9.0 / 16.0);
+    }];
+
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -129,3 +156,11 @@
 }
 
 @end
+
+
+
+
+
+
+
+
