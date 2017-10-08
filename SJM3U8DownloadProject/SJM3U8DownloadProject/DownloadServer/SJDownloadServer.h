@@ -46,6 +46,8 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 
 - (void)cancelDownloadWithURLStr:(NSString *)URLStr completion:(void(^__nullable)(void))completionBlock;
 
+- (void)suspendDownloadWithURLStr:(NSString *)URLStr completion:(void(^__nullable)(void))completionBlock;
+
 @end
 
 
