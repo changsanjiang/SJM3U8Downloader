@@ -604,7 +604,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
         
         /*!
          *  copy一份. 某个 ts 下载完成后, 会从 tmpTsM 中删掉.
-         *  如果这个数组里面没有元素的, 说明下载完成了. */
+         *  如果这个数组里面没有元素了, 说明这个视频下载完成了. */
         NSMutableArray<SJTsEntity *> *tmpTsM = tsM.mutableCopy;
         self.downloadingVideosM[_getVideoFileName(m3u8DownloadAddreesURL)] = tmpTsM;
         
@@ -662,6 +662,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
                     NSString *localServerPath = [NSString stringWithFormat:@"%@/%@/%@", _localServerPath(), _getVideoFileName(m3u8DownloadAddreesURL), _getModeStr(mode)];
                     /// 下载完成回调.
                     if ( completionBlock ) completionBlock(localServerPath, dataPath);
+                    self.downloadingVideosM[_getVideoFileName(m3u8DownloadAddreesURL)] = nil;
                     
                 } errorBlock:^(SJTsEntity *ts, NSError *error) {
                     [timer invalidate];
@@ -672,6 +673,8 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
                      *  暂停就直接 return 了. */
                     if ( SJDownloadCancelCode == error.code ) { return ; }
                     
+                    
+                    /*!*  错误回调 */
                     if ( errorBlock ) errorBlock(error);
                 }];
             }];
