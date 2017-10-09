@@ -34,6 +34,7 @@
     
     __weak typeof(self) _self = self;
     [[SJDownloadServer sharedServer] downloadWithURLStr:self.video.remoteURLStr downloadMode:SJDownloadMode450 downloadProgress:^(float progress) {
+        NSLog(@"%f", progress);
         _progressLabel.text = [NSString stringWithFormat:@"%0.2f", progress];
     } completion:^(NSString *dataPath) {
         NSLog(@"Download End: %@", dataPath);
@@ -55,6 +56,11 @@
  *  暂停下载
  */
 - (IBAction)pause:(id)sender {
+    [[SJDownloadServer sharedServer] suspendWithURLStr:self.video.remoteURLStr downloadMode:SJDownloadMode450 completion:^{
+        NSLog(@"暂停成功");
+    } errorBlock:^(NSError * _Nonnull error) {
+        NSLog(@"暂停失败");
+    }];
 }
 
 /*!

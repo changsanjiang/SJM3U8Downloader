@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSErrorDomain const SJDownloadErrorDomain;
+
 extern NSErrorUserInfoKey const SJDownloadErrorInfoKey;
 
 
@@ -38,15 +39,21 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 @interface SJDownloadServer (DownloadMethods)
 
 /*!
- *  default mode is 450
- */
-- (void)downloadWithURLStr:(NSString *)URLStr downloadProgress:(void(^ __nullable)(float progress))progressBlock completion:(void(^__nullable)(NSString *dataPath))completionBlock errorBlock:(void(^__nullable)(NSError *error))errorBlock;
+ *  default mode is 450 */
+- (void)downloadWithURLStr:(NSString *)URLStr
+          downloadProgress:(void(^ __nullable)(float progress))progressBlock
+                completion:(void(^__nullable)(NSString *dataPath))completionBlock
+                errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
-- (void)downloadWithURLStr:(NSString *)URLStr downloadMode:(SJDownloadMode)mode downloadProgress:(void(^__nullable)(float progress))progressBlock completion:(void(^__nullable)(NSString *dataPath))completionBlock errorBlock:(void(^__nullable)(NSError *error))errorBlock;
+- (void)downloadWithURLStr:(NSString *)URLStr
+              downloadMode:(SJDownloadMode)mode
+          downloadProgress:(void(^__nullable)(float progress))progressBlock
+                completion:(void(^__nullable)(NSString *dataPath))completionBlock
+                errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
-- (void)cancelDownloadWithURLStr:(NSString *)URLStr completion:(void(^__nullable)(void))completionBlock;
-
-- (void)suspendDownloadWithURLStr:(NSString *)URLStr completion:(void(^__nullable)(void))completionBlock;
+/*!
+ *  暂停下载, 文件暂存在 cache 目录中, 等下载完成, 会自动移动到 documents 中. */
+- (void)suspendWithURLStr:(NSString *)URLStr downloadMode:(SJDownloadMode)mode completion:(void(^__nullable)(void))completionBlock errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
 @end
 
@@ -54,8 +61,12 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 
 @interface SJDownloadServer (FileOperation)
 
+/*!
+ *  所有缓存的根目录 */
 - (NSString *)cacheFolderPath;
 
+/*!
+ *  所有下载的文件的根目录 */
 - (NSString *)downloadFolderPath;
 
 @end

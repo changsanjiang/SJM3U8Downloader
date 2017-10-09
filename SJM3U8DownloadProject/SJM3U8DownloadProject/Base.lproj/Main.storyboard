@@ -32,15 +32,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5zD-eJ-ghu">
-                                <rect key="frame" x="159.5" y="394" width="55" height="30"/>
-                                <state key="normal" title="Resume"/>
+                                <rect key="frame" x="123" y="394" width="128" height="30"/>
+                                <state key="normal" title="Resume Download"/>
                                 <connections>
                                     <action selector="resume:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GxB-Yk-w2v"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rgy-mE-hCb">
-                                <rect key="frame" x="166" y="356" width="42" height="30"/>
-                                <state key="normal" title="Pause"/>
+                                <rect key="frame" x="130" y="356" width="114" height="30"/>
+                                <state key="normal" title="Pause Download"/>
                                 <connections>
                                     <action selector="pause:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Rt1-9d-5xp"/>
                                 </connections>
