@@ -14,7 +14,6 @@ extern NSErrorDomain const SJDownloadErrorDomain;
 
 extern NSErrorUserInfoKey const SJDownloadErrorInfoKey;
 
-
 typedef NS_ENUM(NSUInteger, SJDownloadMode) {
     SJDownloadMode450,
     SJDownloadMode200,
@@ -28,6 +27,7 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
     SJDownloadErrorCodeFileOperationError
 };
 
+#pragma mark -
 
 @interface SJDownloadServer : NSObject
 
@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 
 @end
 
+#pragma mark -
 
 @interface SJDownloadServer (DownloadMethods)
 
@@ -42,13 +43,13 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
  *  default mode is 450 */
 - (void)downloadWithURLStr:(NSString *)URLStr
           downloadProgress:(void(^ __nullable)(float progress))progressBlock
-                completion:(void(^__nullable)(NSString *dataPath))completionBlock
+                completion:(void(^__nullable)(NSString *playAddressStr, NSString *localPath))completionBlock
                 errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
 - (void)downloadWithURLStr:(NSString *)URLStr
               downloadMode:(SJDownloadMode)mode
           downloadProgress:(void(^__nullable)(float progress))progressBlock
-                completion:(void(^__nullable)(NSString *dataPath))completionBlock
+                completion:(void(^__nullable)(NSString *playAddressStr, NSString *localPath))completionBlock
                 errorBlock:(void(^__nullable)(NSError *error))errorBlock;
 
 /*!
@@ -57,19 +58,7 @@ typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {
 
 @end
 
-
-
-@interface SJDownloadServer (FileOperation)
-
-/*!
- *  所有缓存的根目录 */
-- (NSString *)cacheFolderPath;
-
-/*!
- *  所有下载的文件的根目录 */
-- (NSString *)downloadFolderPath;
-
-@end
+#pragma mark -
 
 
 NS_ASSUME_NONNULL_END

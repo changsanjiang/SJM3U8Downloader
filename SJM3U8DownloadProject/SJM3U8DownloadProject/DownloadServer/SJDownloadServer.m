@@ -11,13 +11,11 @@
 #import <objc/message.h>
 #import <HTTPServer.h>
 
+static int const SJDownloadCancelCode = -999;
+
 NSErrorDomain const SJDownloadErrorDomain = @"SJDownloadErrorDomain";
 
 NSErrorUserInfoKey const SJDownloadErrorInfoKey = @"SJDownloadErrorInfoKey";
-
-static int const SJDownloadCancelCode = -999;
-
-
 
 typedef NS_ENUM(NSUInteger, SJDownloadState) {
     SJDownloadState_Unknown,
@@ -34,9 +32,6 @@ typedef NS_ENUM(NSUInteger, SJDownloadState) {
     /*!* 下载失败 */
     SJDownloadState_Failed,
 };
-
-
-
 
 inline static NSError *_downloadServerError(SJDownloadErrorCode code, NSString *errorMsg) {
     return [NSError errorWithDomain:SJDownloadErrorDomain code:code userInfo:@{SJDownloadErrorInfoKey:@"msg"}];
@@ -61,7 +56,16 @@ inline static NSString *_getModeStr(SJDownloadMode mode) {
     return modeStr;
 }
 
-inline static NSURL *_getTssDownloadURLStr(NSString *URLStr, SJDownloadMode mode) {
+/*!
+ *  获取视频真实的 m3u8文件的下载地址
+ *
+ *  当前地址:
+ *  http://asp.cntv.lxdns.com/asp/hls/main/0303000a/3/default/f8c28211-dcc2-11e4-9584-21fa84a4ab6e/main.m3u8?maxbr=850
+ *  根据 参数 URLStr + mode, 拼接 m3u8文件下载地址:
+ *  http://asp.cntv.lxdns.com//asp/hls/450/0303000a/3/default/f8c28211-dcc2-11e4-9584-21fa84a4ab6e/450.m3u8
+ *
+ *  把 hls 后面的 main 改成了 450。 最后的路径改成了 450.m3u8（不知道路径是不是固定的） */
+inline static NSURL *_getM3u8DownloadURLStr(NSString *URLStr, SJDownloadMode mode) {
     NSURLComponents *components = [NSURLComponents componentsWithString:URLStr];
     NSString *modeStr = _getModeStr(mode);
     NSString *path = [modeStr stringByDeletingPathExtension];
@@ -77,49 +81,74 @@ inline static NSURL *_getTssDownloadURLStr(NSString *URLStr, SJDownloadMode mode
     return components.URL;
 }
 
+
+#pragma mark - 下面函数 依赖上面两个函数[ _getM3u8DownloadURLStr() 和 _getModeStr() ], 视频保存和缓存的目录不变的话不用管.
+
+/*!
+ *  根据视频下载地址和ts名字, 拼接ts的下载地址. */
 inline static NSURL *_getTsRemoteURL(NSURL *downloadURL, NSString *tsName) {
     NSURLComponents *components = [NSURLComponents componentsWithString:downloadURL.absoluteString];
     components.path = [[components.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:tsName];
     return components.URL;
 }
 
+/*!
+ *  下载根目录 */
 inline static NSString *_getDownloadFolder() {
     return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"downloadFolder"];
 }
 
-inline static NSString *_getTssDownloadFolder(NSURL *remoteURL) {
+/*!
+ *  某个视频的根目录 */
+inline static NSString *_getVideoDownloadFolder(NSURL *remoteURL) {
     NSArray<NSString *> *components = remoteURL.pathComponents;
     return [_getDownloadFolder() stringByAppendingFormat:@"/%@", components[components.count - 2]];
 }
 
+/*!
+ *  缓存根目录 */
 inline static NSString *_getCacheFolder() {
     return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"cacheFolder"];
 }
 
-inline static NSString *_getTssCacheFolder(NSURL *remoteURL) {
+/*!
+ *  某个视频的缓存根目录 */
+inline static NSString *_getVideoCacheFolder(NSURL *remoteURL) {
     NSArray<NSString *> *components = remoteURL.pathComponents;
     return [_getCacheFolder() stringByAppendingFormat:@"/%@", components[components.count - 2]];
 }
 
+/*!
+ *  某个 Ts 文件的路径 */
 inline static NSString *_getTsCachePath(NSURL *remoteURL, NSString *tsName) {
-    return [_getTssCacheFolder(remoteURL) stringByAppendingPathComponent:tsName];
+    return [_getVideoCacheFolder(remoteURL) stringByAppendingPathComponent:tsName];
 }
 
+/*!
+ *  根据路径创建目录
+ *
+ *  创建目录, 这个函数如果文件已存在, 不会再次创建 */
 inline static void _createFileAtPath(NSString *filePath) {
     if ( [[NSFileManager defaultManager] fileExistsAtPath:filePath] ) { return;}
     [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
+/*!
+ *  本地服务器端口 */
 inline static int _localServerPort(void) {
     return 54321;
 }
 
+/*!
+ *  本地服务器地址 */
 inline static NSString *_localServerPath(void) {
     return [NSString stringWithFormat:@"http://127.0.0.1:%d", _localServerPort()];
 }
 
+/*!
+ * 获取远程服务器保存的文件名 */
 inline static NSString *_getVideoFileName(NSURL *remoteURL) {
-    return _getTssDownloadFolder(remoteURL).lastPathComponent;
+    return _getVideoDownloadFolder(remoteURL).lastPathComponent;
 }
 
 #pragma mark -
@@ -167,7 +196,9 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 @synthesize downloadingVideosM = _downloadingVideosM;
 
 /*!
- *  key : fileName */
+ *  key : fileName
+ *
+ *  这个字典存着所有解析过的 ts对象. key是保存在本地的总文件名. */
 - (NSMutableDictionary<NSString *,NSMutableArray<SJTsEntity *> *> *)downloadingVideosM {
     if ( _downloadingVideosM ) return _downloadingVideosM;
     _downloadingVideosM = [NSMutableDictionary new];
@@ -478,51 +509,67 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 
 @implementation SJDownloadServer (DownloadMethods)
 
-- (void)downloadWithURLStr:(NSString *)URLStr downloadProgress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *dataPath))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
+- (void)downloadWithURLStr:(NSString *)URLStr
+          downloadProgress:(void(^ __nullable)(float progress))progressBlock
+                completion:(void(^__nullable)(NSString *playAddressStr, NSString *localPath))completionBlock
+                errorBlock:(void(^__nullable)(NSError *error))errorBlock {
     [self downloadWithURLStr:URLStr downloadMode:SJDownloadMode450 downloadProgress:progressBlock completion:completionBlock errorBlock:errorBlock];
 }
 
-- (void)downloadWithURLStr:(NSString *)URLStr downloadMode:(SJDownloadMode)mode downloadProgress:(void(^)(float progress))progressBlock completion:(void(^)(NSString *dataPath))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
+- (void)downloadWithURLStr:(NSString *)URLStr
+              downloadMode:(SJDownloadMode)mode
+          downloadProgress:(void(^__nullable)(float progress))progressBlock
+                completion:(void(^__nullable)(NSString *playAddressStr, NSString *localPath))completionBlock
+                errorBlock:(void(^__nullable)(NSError *error))errorBlock; {
     if ( 0 == URLStr.length ) {
         if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"下载地址为空, 无法下载!"));
         return;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSURL *downloadURL = _getTssDownloadURLStr(URLStr, mode);
-        if ( nil == downloadURL ) {
+        
+        /*!
+         *  获取m3u8的下载地址 */
+        NSURL *m3u8DownloadAddreesURL = _getM3u8DownloadURLStr(URLStr, mode);
+        if ( nil == m3u8DownloadAddreesURL ) {
             if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"路径转换出错, 无法下载!"));
             return ;
         }
         NSError *error = nil;
-        NSString *tsDataStr = [NSString stringWithContentsOfURL:downloadURL encoding:NSUTF8StringEncoding error:&error];
+        NSString *m3u8DataStr = [NSString stringWithContentsOfURL:m3u8DownloadAddreesURL encoding:NSUTF8StringEncoding error:&error];
         if ( error ) {
-            if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeUnknown, [NSString stringWithFormat:@"网络错误, 无法下载! 请检查ATS||URL是否正确:%@", downloadURL.absoluteString]));
+            if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeUnknown, [NSString stringWithFormat:@"网络错误, 无法下载! 请检查ATS||URL是否正确:%@", m3u8DownloadAddreesURL.absoluteString]));
             return;
         }
         
-        NSString *tssCacheFolder = _getTssCacheFolder(downloadURL);
+        /*!
+         *  获取该视频将要缓存的目录 */
+        NSString *tssCacheFolder = _getVideoCacheFolder(m3u8DownloadAddreesURL);
+        //  创建
         _createFileAtPath(tssCacheFolder);
         
-        NSMutableArray<SJTsEntity *> *tsM = self.downloadingVideosM[_getVideoFileName(downloadURL)];
-        
         /*!
-         *  tsM 存在两种
-         *  第一种是 下载过但是被暂停了.
-         *  第二种就是 新建的下载.
+         *  查看是否之前 解析过 ts 文件.
+         *  有两种情况
+         *  第一种是 下载过但是被暂停了. 已经解析了.
+         *  第二种是 没下载过.
          *
-         *  第一种的下载需要恢复下载. */
+         *  第一种的下载需要恢复下载.
+         *  第二种的直接下载 */
+        NSMutableArray<SJTsEntity *> *tsM = self.downloadingVideosM[_getVideoFileName(m3u8DownloadAddreesURL)];
         
+        // 直接下载
         if ( 0 == tsM.count ) {
-            // 没有下载过.  新建的下载.
+            // 没有下载过.
             tsM = [NSMutableArray array];
             NSString *modeStr = _getModeStr(mode);
-            NSString *m3u8CachePath = [tssCacheFolder stringByAppendingPathComponent:modeStr];
-            if ( ![tsDataStr writeToFile:m3u8CachePath atomically:YES encoding:NSUTF8StringEncoding error:nil] ) {
-                if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeFileOperationError, [NSString stringWithFormat:@"m3u8文件保存失败, 请检查路径是否正确: %@", m3u8CachePath]));
+            NSString *m3u8SavePath = [tssCacheFolder stringByAppendingPathComponent:modeStr];
+            // 把服务器的m3u8文件直接保存到将要下载的cache目录下
+            if ( ![m3u8DataStr writeToFile:m3u8SavePath atomically:YES encoding:NSUTF8StringEncoding error:nil] ) {
+                if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeFileOperationError, [NSString stringWithFormat:@"m3u8文件保存失败, 请检查路径是否正确: %@", m3u8SavePath]));
                 return;
             }
-            
-            NSArray<NSString *> *tsDataArr = [tsDataStr componentsSeparatedByString:@"\n"];
+            // 解析 m3u8文件. 获取 tsArr
+            NSArray<NSString *> *tsDataArr = [m3u8DataStr componentsSeparatedByString:@"\n"];
             [tsDataArr enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if ( 0 == idx ) return;
                 NSString *tsName = obj;
@@ -530,12 +577,13 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
                 if ( ![tsName hasSuffix:@".ts"] ) return;
                 if ( ![tsDurationStr hasPrefix:@"#EXTINF"] ) return;
                 int duration = [tsDurationStr substringFromIndex:8].intValue;
-                NSURL *remoteURL = _getTsRemoteURL(downloadURL, tsName);
+                NSURL *remoteURL = _getTsRemoteURL(m3u8DownloadAddreesURL, tsName);
                 if ( !remoteURL ) {
                     if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"拼接Ts下载路径出错！请检查."));
                     *stop = YES;
                     return;
                 }
+                // 转为模型
                 SJTsEntity *ts = [[SJTsEntity alloc] initWithDuration:duration remoteURL:remoteURL name:tsName];
                 if ( !ts ) {
                     if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeUnknown, @"..."));
@@ -546,14 +594,19 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
                 [tsM addObject:ts];
             }];
         }
+        // 如果下载过
         else {
             [tsM enumerateObjectsUsingBlock:^(SJTsEntity * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                // 重置下载状态
                 obj.downloadState = SJDownloadState_Unknown;
             }];
         }
         
+        /*!
+         *  copy一份. 某个 ts 下载完成后, 会从 tmpTsM 中删掉.
+         *  如果这个数组里面没有元素的, 说明下载完成了. */
         NSMutableArray<SJTsEntity *> *tmpTsM = tsM.mutableCopy;
-        self.downloadingVideosM[_getVideoFileName(downloadURL)] = tmpTsM;
+        self.downloadingVideosM[_getVideoFileName(m3u8DownloadAddreesURL)] = tmpTsM;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSTimer *timer = ({
@@ -578,35 +631,45 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
             
             __weak typeof (self) _self = self;
             [tsM enumerateObjectsUsingBlock:^(SJTsEntity * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                // 前往下载
                 [self downloadDataWithTs:obj downloadProgress:nil completion:^(SJTsEntity *ts, NSString *dataPath) {
+                    /// 下载完毕回调
                     __strong typeof (_self) self = _self;
                     if ( !self ) return;
-                    NSLog(@"___ : %zd", ts.downloadState);
-                    /// 下载完毕
                     ts.downloadState = SJDownloadState_Downloaded;
-                    /// 下载完一个删一个
+                    /// 下载完一个删一个. 等待下载完毕...
                     [tmpTsM removeObject:ts];
-                    /// 还没下载完, 继续下载.
-                    if ( 0 != tmpTsM.count ) return;
-                    /// 当 tmpTsM 总数为0时, 代表下载完毕.
+                    if ( 0 != tmpTsM.count ) return; // 如果等于0, 说明下载完毕, 开始跑下面的代码.
+                    
                     /// 下面是将下载的文件 移动到 documents 中.
                     [timer invalidate];
                     
-                    NSString *tssDownloadFolder = _getTssDownloadFolder(downloadURL);
-                    NSString *tssCacheFolder = _getTssCacheFolder(downloadURL);
-                    if ( [[NSFileManager defaultManager] fileExistsAtPath:tssDownloadFolder] ) {
-                        [[NSFileManager defaultManager] removeItemAtPath:tssDownloadFolder error:nil];
+                    /// 视频将要保存的目录
+                    NSString *videoDownloadFolder = _getVideoDownloadFolder(m3u8DownloadAddreesURL);
+                    /// 缓存的目录
+                    NSString *videoCacheFolder = _getVideoCacheFolder(m3u8DownloadAddreesURL);
+                    
+                    if ( [[NSFileManager defaultManager] fileExistsAtPath:videoDownloadFolder] ) {
+                        /// 如果存在同名文件, 直接删掉.
+                        [[NSFileManager defaultManager] removeItemAtPath:videoDownloadFolder error:nil];
                     }
+                    
                     NSError *error;
-                    [[NSFileManager defaultManager] moveItemAtPath:tssCacheFolder toPath:tssDownloadFolder error:&error];
+                    /// 将 cache 移到 documents 中.
+                    [[NSFileManager defaultManager] moveItemAtPath:videoCacheFolder toPath:videoDownloadFolder error:&error];
+                    /// 进度回调一下.
                     if ( progressBlock ) progressBlock(1.0f);
-                    NSString *localServerPath = [NSString stringWithFormat:@"%@/%@/%@", _localServerPath(), _getVideoFileName(downloadURL), _getModeStr(mode)];
-                    if ( completionBlock ) completionBlock(localServerPath);
+                    NSString *localServerPath = [NSString stringWithFormat:@"%@/%@/%@", _localServerPath(), _getVideoFileName(m3u8DownloadAddreesURL), _getModeStr(mode)];
+                    /// 下载完成回调.
+                    if ( completionBlock ) completionBlock(localServerPath, dataPath);
                     
                 } errorBlock:^(SJTsEntity *ts, NSError *error) {
                     [timer invalidate];
 
-                    /// 下载被暂停
+                    /*!
+                     *  如果 error.code == -999 表示 用户点击了暂停.
+                     *  URLDataTask 调用了 cancel 就报 code -999 错误.
+                     *  暂停就直接 return 了. */
                     if ( SJDownloadCancelCode == error.code ) { return ; }
                     
                     if ( errorBlock ) errorBlock(error);
@@ -623,36 +686,22 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
     }
     
     /// get downloading tss
-    NSURL *downloadURL = _getTssDownloadURLStr(URLStr, mode);
+    NSURL *downloadURL = _getM3u8DownloadURLStr(URLStr, mode);
     if ( nil == downloadURL ) {
         if ( errorBlock ) errorBlock(_downloadServerError(SJDownloadErrorCodeURLError, @"路径转换出错, 无法暂停下载!"));
         return ;
     }
     
+    /// 获取下载中的 ts 们
     NSMutableArray<SJTsEntity *> *tssM = self.downloadingVideosM[_getVideoFileName(downloadURL)].mutableCopy;
     [tssM enumerateObjectsUsingBlock:^(SJTsEntity * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [tssM removeObject:obj];
+        /// 一个一个的取消掉.
         [self suspendWithTs:obj completion:^(SJTsEntity *ts) {
-            if ( 0 != tssM.count ) return;
+            if ( 0 != tssM.count ) return; /// 如果 等于0, 说明都取消掉了, 调用 completion 的回调.
             if ( completionBlock ) completionBlock();
         }];
     }];
-}
-
-@end
-
-
-#pragma mark -
-
-
-@implementation SJDownloadServer (FileOperation)
-
-- (NSString *)cacheFolderPath {
-    return _getCacheFolder();
-}
-
-- (NSString *)downloadFolderPath {
-    return _getDownloadFolder();
 }
 
 @end

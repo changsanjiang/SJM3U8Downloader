@@ -36,17 +36,17 @@
     [[SJDownloadServer sharedServer] downloadWithURLStr:self.video.remoteURLStr downloadMode:SJDownloadMode450 downloadProgress:^(float progress) {
         NSLog(@"%f", progress);
         _progressLabel.text = [NSString stringWithFormat:@"%0.2f", progress];
-    } completion:^(NSString *dataPath) {
-        NSLog(@"Download End: %@", dataPath);
+    } completion:^(NSString *playAddressStr, NSString *localPath) {
+        NSLog(@"Download End: %@", playAddressStr);
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        self.video.fileSavePath = dataPath;
+        self.video.localPlayAddreesStr = playAddressStr;
+        self.video.fileSavePath = localPath;
         [[SJDatabaseMap sharedServer] insertOrUpdateDataWithModel:self.xiaoMing callBlock:^(BOOL result) {
             if ( result ) NSLog(@"下载成功!");
             else NSLog(@"下载失败!");
         }];
-
-        [SJVideoPlayer sharedPlayer].assetURL = [NSURL URLWithString:dataPath];
+        [SJVideoPlayer sharedPlayer].assetURL = [NSURL URLWithString:playAddressStr];
     } errorBlock:^(NSError *error) {
         NSLog(@"Downlaod Error: %@", error.userInfo[SJDownloadErrorInfoKey]);
     }];

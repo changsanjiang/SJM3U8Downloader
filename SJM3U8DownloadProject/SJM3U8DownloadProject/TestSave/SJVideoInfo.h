@@ -15,6 +15,7 @@
 @property (nonatomic, assign) NSInteger videoId;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *fileSavePath;
+@property (nonatomic, strong) NSString *localPlayAddreesStr;
 @property (nonatomic, strong) NSString *remoteURLStr;
 
 @end
