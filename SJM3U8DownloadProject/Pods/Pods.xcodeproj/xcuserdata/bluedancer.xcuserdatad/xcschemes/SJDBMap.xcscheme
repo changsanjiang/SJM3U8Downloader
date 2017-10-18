@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'D9831B33E908E226C9DCE52DF9187A9A'
+               BlueprintIdentifier = '07A6BD101AD8037A5CE20415783D63A0'
                BlueprintName = 'SJDBMap'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libSJDBMap.a'>

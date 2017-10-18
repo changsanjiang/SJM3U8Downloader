@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, SJDownloadMode) {
     SJDownloadMode450,
     SJDownloadMode200,
     SJDownloadMode850,
+    SJDownloadMode1200,
 };
 
 typedef NS_ENUM(NSUInteger, SJDownloadErrorCode) {

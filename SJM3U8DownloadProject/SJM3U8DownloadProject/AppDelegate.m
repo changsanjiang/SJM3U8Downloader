@@ -15,8 +15,24 @@
 @implementation AppDelegate
 
 
+void use_a_VLA(int h, int v, int arr[h][v]) {
+    NSLog(@"h = %zd, v = %zd arr[h][v] = %zd", h, v, arr);
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    int arr[10][10] = {0};
+    
+    int a = 1;
+    int b = 0;
+    
+    arr[a][b] = 1213;
+
+    int (*p)[b] = (&arr[a])[b];
+    
+    use_a_VLA(a, b, p);
+    
     return YES;
 }
 

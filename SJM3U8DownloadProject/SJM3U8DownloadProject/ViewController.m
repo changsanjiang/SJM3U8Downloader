@@ -156,7 +156,11 @@
     if ( _video ) return _video;
     _video = [SJVideoInfo new];
     _video.name = @"某小偷上公交车偷钱包";
-    _video.remoteURLStr = @"http://asp.cntv.lxdns.com/asp/hls/main/0303000a/3/default/f8c28211-dcc2-11e4-9584-21fa84a4ab6e/main.m3u8?maxbr=850";
+//    http://asp.cntv.lxdns.com/asp/hls/main/0303000a/3/default/f8c28211-dcc2-11e4-9584-21fa84a4ab6e/main.m3u8?maxbr=850
+//    http://asp.cntv.lxdns.com/asp/hls/1200/0303000a/3/default/d0b94213a9be4d5ba6fac7d9803c4819/1200.m3u8
+//    http://asp.cntv.lxdns.com/asp/hls/850/0303000a/3/default/fbf91991bbc640a68ab4f451eacef28f/850.m3u8
+//    http://asp.cntv.lxdns.com/asp/hls/850/0303000a/3/default/de324ef9a71da641b1464e0cca60f2de/850.m3u8
+    _video.remoteURLStr = @"http://asp.cntv.lxdns.com/asp/hls/850/0303000a/3/default/fbf91991bbc640a68ab4f451eacef28f/850.m3u8";
     _video.videoId = 1123;
     return _video;
 }

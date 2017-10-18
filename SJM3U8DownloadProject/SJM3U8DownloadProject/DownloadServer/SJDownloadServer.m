@@ -52,6 +52,10 @@ inline static NSString *_getModeStr(SJDownloadMode mode) {
             modeStr = @"850.m3u8";
         }
             break;
+        case SJDownloadMode1200: {
+            modeStr = @"1200.m3u8";
+        }
+            break;
     }
     return modeStr;
 }
@@ -373,7 +377,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 }
 
 - (void)setProgressBlock:(void (^)(SJTsEntity *, float))progressBlock {
-    objc_setAssociatedObject(self, @selector(progressBlock), progressBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(progressBlock), progressBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void (^)(SJTsEntity *, NSString *))completionBlock {
@@ -381,7 +385,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 }
 
 - (void)setCompletionBlock:(void (^)(SJTsEntity *, NSString *))completionBlock {
-    objc_setAssociatedObject(self, @selector(completionBlock), completionBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(completionBlock), completionBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 - (void (^)(SJTsEntity *, NSError *))errorBlock {
@@ -389,7 +393,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 }
 
 - (void)setErrorBlock:(void (^)(SJTsEntity *, NSError *))errorBlock {
-    objc_setAssociatedObject(self, @selector(errorBlock), errorBlock, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(errorBlock), errorBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 @end
@@ -456,6 +460,7 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSHTTPURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
     long long cacheSize = dataTask.ts.cacheSize;
+    NSLog(@"%zd - %zd", [response.allHeaderFields[@"Content-Length"] longLongValue], response.expectedContentLength);
     dataTask.ts.totalSize = response.expectedContentLength + cacheSize;
     dataTask.ts.downloadSize = cacheSize;
     /*!
@@ -474,28 +479,22 @@ inline static NSString *_getVideoFileName(NSURL *remoteURL) {
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionDataTask *)dataTask didCompleteWithError:(NSError *)error {
-    [self.tasksM removeObject:dataTask];
-    [dataTask.ts.outputStream close];
-    dataTask.ts.outputStream = nil;
     
-    switch (dataTask.state) {
-        case NSURLSessionTaskStateCompleted: {
-            if ( error ) {
-                if ( dataTask.ts.downloadState == SJDownloadState_Suspend ) {
-                    if ( dataTask.ts.suspendCompletionBlock ) dataTask.ts.suspendCompletionBlock(dataTask.ts);
-                }
-                // 暂停也是 error 的一种. 一起回调 error block. 上游处理去. 
-                if ( dataTask.errorBlock ) dataTask.errorBlock(dataTask.ts, error);
-                return;
-            }
-            NSString *cachePath = _getTsCachePath(dataTask.ts.remoteURL, dataTask.ts.name);
-            if ( dataTask.completionBlock ) dataTask.completionBlock(dataTask.ts, cachePath);
+    if ( error ) {
+        if ( dataTask.ts.downloadState == SJDownloadState_Suspend ) {
+            if ( dataTask.ts.suspendCompletionBlock ) dataTask.ts.suspendCompletionBlock(dataTask.ts);
         }
-            break;
-        case NSURLSessionTaskStateRunning:   break;
-        case NSURLSessionTaskStateSuspended: break;
-        case NSURLSessionTaskStateCanceling: break;
+        // 暂停也是 error 的一种. 一起回调 error block. 上游处理去.
+        if ( dataTask.errorBlock ) dataTask.errorBlock(dataTask.ts, error);
+        return;
     }
+
+    [self.tasksM removeObject:dataTask];
+
+    [dataTask.ts closeOutputStream];
+    NSString *cachePath = _getTsCachePath(dataTask.ts.remoteURL, dataTask.ts.name);
+    if ( dataTask.completionBlock ) dataTask.completionBlock(dataTask.ts, cachePath);
+
 }
 
 @end
