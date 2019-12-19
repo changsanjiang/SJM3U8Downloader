@@ -15,7 +15,12 @@ PODS:
     - SJUIKit/ObserverHelper
   - SJDownloadDataTask/Core/ResourceLoader (1.2.4):
     - SJUIKit/ObserverHelper
-  - SJM3U8Downloader (0.1.0):
+  - SJM3U8Downloader (0.0.1):
+    - CocoaHTTPServer
+    - SJDownloadDataTask
+    - SJM3U8Downloader/Core (= 0.0.1)
+    - SJUIKit/SQLite3
+  - SJM3U8Downloader/Core (0.0.1):
     - CocoaHTTPServer
     - SJDownloadDataTask
     - SJUIKit/SQLite3
@@ -92,7 +97,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   SJDownloadDataTask: 3755925702cad1145c7d89180c50eeb8e78f38de
-  SJM3U8Downloader: 0827dcdeaef34909d659b6e57ade798c99599d35
+  SJM3U8Downloader: ee869dad3d60b16e71e93ab99683457d6c63ecb4
   SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
