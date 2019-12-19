@@ -8,7 +8,7 @@
 
 #import "SJM3U8Downloader.h"
 #import <sys/xattr.h>
-#import <HTTPServer.h>
+#import <CocoaHTTPServer/HTTPServer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 #define SJM3U8DownloaderFoldername(__url__) [NSString stringWithFormat:@"%lu", (unsigned long)__url__.hash]
