@@ -1,0 +1,101 @@
+PODS:
+  - CocoaAsyncSocket (7.6.3)
+  - CocoaHTTPServer (2.3):
+    - CocoaAsyncSocket
+    - CocoaLumberjack
+  - CocoaLumberjack (3.6.0):
+    - CocoaLumberjack/Core (= 3.6.0)
+  - CocoaLumberjack/Core (3.6.0)
+  - MJRefresh (3.3.1)
+  - SJDownloadDataTask (1.2.4):
+    - SJDownloadDataTask/Core (= 1.2.4)
+    - SJUIKit/ObserverHelper
+  - SJDownloadDataTask/Core (1.2.4):
+    - SJDownloadDataTask/Core/ResourceLoader (= 1.2.4)
+    - SJUIKit/ObserverHelper
+  - SJDownloadDataTask/Core/ResourceLoader (1.2.4):
+    - SJUIKit/ObserverHelper
+  - SJM3U8Downloader (0.1.0):
+    - CocoaHTTPServer
+    - SJDownloadDataTask
+    - SJUIKit/SQLite3
+  - SJUIKit (0.0.0.39):
+    - SJUIKit/AsyncLoad (= 0.0.0.39)
+    - SJUIKit/AttributesFactory (= 0.0.0.39)
+    - SJUIKit/Base (= 0.0.0.39)
+    - SJUIKit/CornerMask (= 0.0.0.39)
+    - SJUIKit/Date (= 0.0.0.39)
+    - SJUIKit/ObserverHelper (= 0.0.0.39)
+    - SJUIKit/Other (= 0.0.0.39)
+    - SJUIKit/Photo (= 0.0.0.39)
+    - SJUIKit/Queues (= 0.0.0.39)
+    - SJUIKit/Refresh (= 0.0.0.39)
+    - SJUIKit/SQLite3 (= 0.0.0.39)
+    - SJUIKit/Thread (= 0.0.0.39)
+    - SJUIKit/UIMaker (= 0.0.0.39)
+  - SJUIKit/AsyncLoad (0.0.0.39):
+    - SJUIKit/CornerMask
+  - SJUIKit/AttributesFactory (0.0.0.39):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.39)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.39)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.39)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.39)
+  - SJUIKit/Base (0.0.0.39):
+    - SJUIKit/Base/Core (= 0.0.0.39)
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Base/Core (0.0.0.39):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/CornerMask (0.0.0.39):
+    - SJUIKit/ObserverHelper
+  - SJUIKit/Date (0.0.0.39)
+  - SJUIKit/ObserverHelper (0.0.0.39)
+  - SJUIKit/Other (0.0.0.39):
+    - SJUIKit/Date
+  - SJUIKit/Photo (0.0.0.39)
+  - SJUIKit/Queues (0.0.0.39)
+  - SJUIKit/Refresh (0.0.0.39):
+    - MJRefresh
+  - SJUIKit/SQLite3 (0.0.0.39):
+    - SJUIKit/SQLite3/Core (= 0.0.0.39)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.39)
+  - SJUIKit/SQLite3/Core (0.0.0.39):
+    - SJUIKit/SQLite3/Protocol
+  - SJUIKit/SQLite3/Protocol (0.0.0.39)
+  - SJUIKit/Thread (0.0.0.39)
+  - SJUIKit/UIMaker (0.0.0.39):
+    - SJUIKit/UIMaker/Core (= 0.0.0.39)
+  - SJUIKit/UIMaker/Core (0.0.0.39)
+  - YYModel (1.0.4)
+
+DEPENDENCIES:
+  - SJM3U8Downloader (from `../`)
+  - SJUIKit
+  - YYModel
+
+SPEC REPOS:
+  trunk:
+    - CocoaAsyncSocket
+    - CocoaHTTPServer
+    - CocoaLumberjack
+    - MJRefresh
+    - SJDownloadDataTask
+    - SJUIKit
+    - YYModel
+
+EXTERNAL SOURCES:
+  SJM3U8Downloader:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  CocoaHTTPServer: 5624681fc3473d43b18202f635f9b3abb013b530
+  CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
+  MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
+  SJDownloadDataTask: 3755925702cad1145c7d89180c50eeb8e78f38de
+  SJM3U8Downloader: 0827dcdeaef34909d659b6e57ade798c99599d35
+  SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
+  YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
+
+PODFILE CHECKSUM: f19eafd17c0d935a3af2358fa33bcd0b1cd32714
+
+COCOAPODS: 1.8.4

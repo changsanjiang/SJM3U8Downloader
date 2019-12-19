@@ -1,0 +1,14 @@
+# use_frameworks!
+
+platform :ios, '8.0'
+
+target 'SJM3U8Downloader_Example' do
+  
+  pod 'SJM3U8Downloader', :path => '../'
+  pod 'YYModel'
+  pod 'SJUIKit'
+  
+  target 'SJM3U8Downloader_Tests' do
+    inherit! :search_paths
+  end
+end

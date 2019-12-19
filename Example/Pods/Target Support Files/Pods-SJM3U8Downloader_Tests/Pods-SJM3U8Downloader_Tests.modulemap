@@ -1,0 +1,6 @@
+framework module Pods_SJM3U8Downloader_Tests {
+  umbrella header "Pods-SJM3U8Downloader_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

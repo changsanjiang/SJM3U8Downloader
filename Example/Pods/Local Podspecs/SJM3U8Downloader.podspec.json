@@ -1,0 +1,33 @@
+{
+  "name": "SJM3U8Downloader",
+  "version": "0.1.0",
+  "summary": "A short description of SJM3U8Downloader.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/changsanjiang@gmail.com/SJM3U8Downloader",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "changsanjiang@gmail.com": "changsanjiang@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/changsanjiang@gmail.com/SJM3U8Downloader.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "SJM3U8Downloader/**/*",
+  "dependencies": {
+    "SJDownloadDataTask": [
+
+    ],
+    "CocoaHTTPServer": [
+
+    ],
+    "SJUIKit/SQLite3": [
+
+    ]
+  }
+}

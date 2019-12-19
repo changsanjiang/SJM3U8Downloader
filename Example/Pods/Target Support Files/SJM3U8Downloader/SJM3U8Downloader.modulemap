@@ -1,0 +1,6 @@
+framework module SJM3U8Downloader {
+  umbrella header "SJM3U8Downloader-umbrella.h"
+
+  export *
+  module * { export * }
+}
