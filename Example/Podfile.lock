@@ -63,9 +63,12 @@ PODS:
   - SJUIKit/SQLite3 (0.0.0.39):
     - SJUIKit/SQLite3/Core (= 0.0.0.39)
     - SJUIKit/SQLite3/Protocol (= 0.0.0.39)
+    - YYModel
   - SJUIKit/SQLite3/Core (0.0.0.39):
     - SJUIKit/SQLite3/Protocol
-  - SJUIKit/SQLite3/Protocol (0.0.0.39)
+    - YYModel
+  - SJUIKit/SQLite3/Protocol (0.0.0.39):
+    - YYModel
   - SJUIKit/Thread (0.0.0.39)
   - SJUIKit/UIMaker (0.0.0.39):
     - SJUIKit/UIMaker/Core (= 0.0.0.39)
@@ -74,8 +77,7 @@ PODS:
 
 DEPENDENCIES:
   - SJM3U8Downloader (from `../`)
-  - SJUIKit
-  - YYModel
+  - SJUIKit (from `https://gitee.com/RongYaoTeam/SJUIKit.git`)
 
 SPEC REPOS:
   trunk:
@@ -84,12 +86,18 @@ SPEC REPOS:
     - CocoaLumberjack
     - MJRefresh
     - SJDownloadDataTask
-    - SJUIKit
     - YYModel
 
 EXTERNAL SOURCES:
   SJM3U8Downloader:
     :path: "../"
+  SJUIKit:
+    :git: https://gitee.com/RongYaoTeam/SJUIKit.git
+
+CHECKOUT OPTIONS:
+  SJUIKit:
+    :commit: b6e8e0f5e9e68420f9f4d6eaa64cdb53d8302697
+    :git: https://gitee.com/RongYaoTeam/SJUIKit.git
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
@@ -98,9 +106,9 @@ SPEC CHECKSUMS:
   MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   SJDownloadDataTask: 3755925702cad1145c7d89180c50eeb8e78f38de
   SJM3U8Downloader: ee869dad3d60b16e71e93ab99683457d6c63ecb4
-  SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
+  SJUIKit: 15270b41d005b7d1c95b91aaf30832198ae46a42
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 59c98842af109a1a7d80d9c368a75d9b002046c4
+PODFILE CHECKSUM: 04b324174c29e6c826d62e1e1f582e8a1eb86505
 
 COCOAPODS: 1.8.4
