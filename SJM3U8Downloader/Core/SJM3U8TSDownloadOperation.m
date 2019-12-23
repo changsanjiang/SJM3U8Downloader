@@ -80,9 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         };
         
-        _downloadTask = [SJDownloadDataTask downloadWithURLStr:self.url toPath:[NSURL fileURLWithPath:self.path] append:YES progress:nil success:completionHandler failure:completionHandler];
-        
-        [SJDownloadDataTask downloadWithURLStr:self.url toPath:[NSURL fileURLWithPath:self.path] append:YES response:^BOOL(SJDownloadDataTask * _Nonnull dataTask, NSURLResponse *response) {
+        _downloadTask = [SJDownloadDataTask downloadWithURLStr:self.url toPath:[NSURL fileURLWithPath:self.path] append:YES response:^BOOL(SJDownloadDataTask * _Nonnull dataTask, NSURLResponse *response) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
             if ( ![response.MIMEType hasPrefix:@"video"] &&

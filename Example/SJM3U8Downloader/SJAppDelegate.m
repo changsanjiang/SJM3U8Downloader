@@ -12,6 +12,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef DEBUG
+    NSLog(@"%@", NSTemporaryDirectory());
+#endif
     // Override point for customization after application launch.
     return YES;
 }

@@ -10,6 +10,7 @@
 #import "SJM3U8DownloadListController.h"
 #import "TestItemTableViewCell.h"
 #import <SJUIKit/NSAttributedString+SJMake.h>
+#import "PlayerViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface TestListViewController ()<SJM3U8DownloadListControllerDelegate, SJM3U8DownloadListItemDelegate>
@@ -131,8 +132,16 @@ NS_ASSUME_NONNULL_BEGIN
             case SJDownloadStateCancelled:
                 state = @"state: Cancelled";
                 break;
-            case SJDownloadStateFinished:
+            case SJDownloadStateFinished: {
                 state = @"state: Finished";
+                if ( self.presentingViewController == nil ) {
+//                    http://hls.cntv.myalicdn.com/asp/hls/1200/0303000a/3/default/62d3dbaef5df4bfea6f44608d93a3f61/1200.m3u8
+                    
+//                    NSString *url = [SJM3U8DownloadListController.shared localPlayUrlByUrl:item.url];
+//                    PlayerViewController *vc = [PlayerViewController.alloc initWithUrl:url];
+//                    [self presentViewController:vc animated:YES completion:nil];
+                }
+            }
                 break;
             case SJDownloadStateFailed:
                 state = @"state: Failed";

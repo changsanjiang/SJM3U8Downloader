@@ -20,12 +20,14 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
-		746BB83A5978DB319B95EF4E /* Pods_SJM3U8Downloader_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFAA97211492FF2693FF2E94 /* Pods_SJM3U8Downloader_Tests.framework */; };
+		77AB874F23B087E100C516F8 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AB874E23B087E100C516F8 /* PlayerViewController.m */; };
+		77AB875223B0886500C516F8 /* UIViewController+SJRotationControlExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 77AB875023B0886500C516F8 /* UIViewController+SJRotationControlExtended.m */; };
 		77C209D023AB6D2700096276 /* TestListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C209B923AB6D2600096276 /* TestListViewController.m */; };
 		77C209D123AB6D2700096276 /* SJM3U8DownloadListItem+TestExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C209BB23AB6D2600096276 /* SJM3U8DownloadListItem+TestExtended.m */; };
 		77C209D923AB6D2700096276 /* TestItemTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C209CF23AB6D2700096276 /* TestItemTableViewCell.m */; };
-		855C4A697AC1C63304929E34 /* Pods_SJM3U8Downloader_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CFE55161BFB5F676DDD60D0 /* Pods_SJM3U8Downloader_Example.framework */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		D298057535B73A853D5D16EC /* Pods_SJM3U8Downloader_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF161C6106BACAF98CCF79A /* Pods_SJM3U8Downloader_Example.framework */; };
+		E4B432EB7812E477F3A9CBE6 /* Pods_SJM3U8Downloader_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D62BDD745D7B351DCA46C2E /* Pods_SJM3U8Downloader_Tests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +42,6 @@
 
 /* Begin PBXFileReference section */
 		02903C6D4C8B11E4303F9D29 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		0CFE55161BFB5F676DDD60D0 /* Pods_SJM3U8Downloader_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJM3U8Downloader_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BB39BFBB1016AB4FF40B2C0 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		21614FED94F5D633A16913EF /* Pods-SJM3U8Downloader_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJM3U8Downloader_Tests.release.xcconfig"; path = "Target Support Files/Pods-SJM3U8Downloader_Tests/Pods-SJM3U8Downloader_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		389361B4DABE324905CABF6F /* SJM3U8Downloader.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJM3U8Downloader.podspec; path = ../SJM3U8Downloader.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -61,8 +62,13 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		6D62BDD745D7B351DCA46C2E /* Pods_SJM3U8Downloader_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJM3U8Downloader_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		71A354028D6283C97CE579E9 /* Pods-SJM3U8Downloader_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJM3U8Downloader_Example.release.xcconfig"; path = "Target Support Files/Pods-SJM3U8Downloader_Example/Pods-SJM3U8Downloader_Example.release.xcconfig"; sourceTree = "<group>"; };
+		77AB874D23B087E100C516F8 /* PlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
+		77AB874E23B087E100C516F8 /* PlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
+		77AB875023B0886500C516F8 /* UIViewController+SJRotationControlExtended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+SJRotationControlExtended.m"; sourceTree = "<group>"; };
+		77AB875123B0886500C516F8 /* UIViewController+SJRotationControlExtended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SJRotationControlExtended.h"; sourceTree = "<group>"; };
 		77C209B923AB6D2600096276 /* TestListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestListViewController.m; sourceTree = "<group>"; };
 		77C209BA23AB6D2600096276 /* TestItemTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestItemTableViewCell.h; sourceTree = "<group>"; };
 		77C209BB23AB6D2600096276 /* SJM3U8DownloadListItem+TestExtended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SJM3U8DownloadListItem+TestExtended.m"; sourceTree = "<group>"; };
@@ -71,8 +77,8 @@
 		77C209CF23AB6D2700096276 /* TestItemTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestItemTableViewCell.m; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A5EC65C0BBC20106247DC3D0 /* Pods-SJM3U8Downloader_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJM3U8Downloader_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SJM3U8Downloader_Tests/Pods-SJM3U8Downloader_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		AFAA97211492FF2693FF2E94 /* Pods_SJM3U8Downloader_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJM3U8Downloader_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA63C499B26B4F08339B8EB /* Pods-SJM3U8Downloader_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJM3U8Downloader_Example.debug.xcconfig"; path = "Target Support Files/Pods-SJM3U8Downloader_Example/Pods-SJM3U8Downloader_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		FEF161C6106BACAF98CCF79A /* Pods_SJM3U8Downloader_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJM3U8Downloader_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +89,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				855C4A697AC1C63304929E34 /* Pods_SJM3U8Downloader_Example.framework in Frameworks */,
+				D298057535B73A853D5D16EC /* Pods_SJM3U8Downloader_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +100,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				746BB83A5978DB319B95EF4E /* Pods_SJM3U8Downloader_Tests.framework in Frameworks */,
+				E4B432EB7812E477F3A9CBE6 /* Pods_SJM3U8Downloader_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,8 +135,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				0CFE55161BFB5F676DDD60D0 /* Pods_SJM3U8Downloader_Example.framework */,
-				AFAA97211492FF2693FF2E94 /* Pods_SJM3U8Downloader_Tests.framework */,
+				FEF161C6106BACAF98CCF79A /* Pods_SJM3U8Downloader_Example.framework */,
+				6D62BDD745D7B351DCA46C2E /* Pods_SJM3U8Downloader_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -142,6 +148,10 @@
 				6003F59D195388D20070C39A /* SJAppDelegate.m */,
 				77C209CD23AB6D2700096276 /* TestListViewController.h */,
 				77C209B923AB6D2600096276 /* TestListViewController.m */,
+				77AB874D23B087E100C516F8 /* PlayerViewController.h */,
+				77AB874E23B087E100C516F8 /* PlayerViewController.m */,
+				77AB875123B0886500C516F8 /* UIViewController+SJRotationControlExtended.h */,
+				77AB875023B0886500C516F8 /* UIViewController+SJRotationControlExtended.m */,
 				77C209DB23AB6DBF00096276 /* Core */,
 				77C209DA23AB6DA500096276 /* Sources */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -407,11 +417,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77AB875223B0886500C516F8 /* UIViewController+SJRotationControlExtended.m in Sources */,
 				77C209D923AB6D2700096276 /* TestItemTableViewCell.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				77C209D123AB6D2700096276 /* SJM3U8DownloadListItem+TestExtended.m in Sources */,
 				77C209D023AB6D2700096276 /* TestListViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				77AB874F23B087E100C516F8 /* PlayerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,6 +491,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -519,6 +532,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -540,6 +554,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = U5A7L7SMNP;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJM3U8Downloader/SJM3U8Downloader-Prefix.pch";
 				INFOPLIST_FILE = "SJM3U8Downloader/SJM3U8Downloader-Info.plist";
@@ -547,6 +562,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
+				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -557,6 +573,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = U5A7L7SMNP;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJM3U8Downloader/SJM3U8Downloader-Prefix.pch";
 				INFOPLIST_FILE = "SJM3U8Downloader/SJM3U8Downloader-Info.plist";
@@ -564,6 +581,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
+				VALID_ARCHS = "arm64 arm64e";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
