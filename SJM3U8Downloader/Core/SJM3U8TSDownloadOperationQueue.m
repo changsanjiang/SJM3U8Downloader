@@ -182,7 +182,7 @@ NSNotificationName const SJM3U8TSDownloadOperationQueueProgressDidChangeNotifica
             }
             else {
                 fileParser = [SJM3U8FileParser fileParserWithURL:self.url saveKeyToFolder:self.folder error:&error];
-                if ( error != nil ) {
+                if ( error == nil ) {
                     [fileParser writeToFile:infoPath error:&error];
                 }
             }

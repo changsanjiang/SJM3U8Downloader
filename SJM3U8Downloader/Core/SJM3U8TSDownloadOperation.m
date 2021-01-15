@@ -8,6 +8,7 @@
 
 #import "SJM3U8TSDownloadOperation.h"
 #import <SJDownloadDataTask/SJDownloadDataTask.h>
+#import "SJM3U8Configuration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJM3U8TSDownloadOperation () {
@@ -83,17 +84,23 @@ NS_ASSUME_NONNULL_BEGIN
         _downloadTask = [SJDownloadDataTask downloadWithURLStr:self.url toPath:[NSURL fileURLWithPath:self.path] append:YES response:^BOOL(SJDownloadDataTask * _Nonnull dataTask, NSURLResponse *response) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
-            if ( ![response.MIMEType hasPrefix:@"video"] &&
-                 ![response.MIMEType hasPrefix:@"application/octet-stream"] ) {
-                if ( self.downalodCompletionHandler != nil ) {
-#ifdef DEBUG
-                    NSLog(@"格式异常, 无法继续下载");
-#endif
-                    self.downalodCompletionHandler(self, [NSError errorWithDomain:NSCocoaErrorDomain code:3002 userInfo:@{@"msg":@"格式异常, 无法继续下载"}]);
-                }
-                return NO;
+            BOOL allows = [response.MIMEType hasPrefix:@"video"] &&
+                          [response.MIMEType hasPrefix:@"application/octet-stream"];
+            
+            if ( SJM3U8Configuration.shared.allowDownloads != nil ) {
+                allows = SJM3U8Configuration.shared.allowDownloads(response);
             }
-            return YES;
+            
+            if ( allows )
+                return YES;
+
+            if ( self.downalodCompletionHandler != nil ) {
+#ifdef DEBUG
+                NSLog(@"格式异常, 无法继续下载");
+#endif
+                self.downalodCompletionHandler(self, [NSError errorWithDomain:NSCocoaErrorDomain code:3002 userInfo:@{@"msg":@"格式异常, 无法继续下载"}]);
+            }
+            return NO;
         } progress:nil success:completionHandler failure:completionHandler];
     }
 }

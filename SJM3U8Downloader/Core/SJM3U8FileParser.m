@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     SJM3U8FileParser *parser = SJM3U8FileParser.alloc.init;
     parser.url = url;
-    parser.tsArray = tsArray;
+    parser.tsArray = [tsArray reverseObjectEnumerator].allObjects;
     parser.contents = restructureContents;
     return parser;
 }
