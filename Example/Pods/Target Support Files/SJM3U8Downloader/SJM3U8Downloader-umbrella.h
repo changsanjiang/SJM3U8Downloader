@@ -11,6 +11,8 @@
 #endif
 
 #import "SJM3U8DownloadListController.h"
+#import "MCSData.h"
+#import "MCSDownload.h"
 #import "SJM3U8Downloader.h"
 #import "SJM3U8DownloadListControllerDefines.h"
 #import "SJM3U8DownloadListItem.h"

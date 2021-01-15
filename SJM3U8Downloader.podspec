@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SJM3U8Downloader'
-  s.version          = '0.0.2'
+  s.version          = '0.0.3'
   s.summary          = 'm3u8 downloader.'
 
   s.description      = <<-DESC
@@ -27,6 +27,6 @@ Pod::Spec.new do |s|
   end
   
   s.dependency 'SJDownloadDataTask'
-  s.dependency 'CocoaHTTPServer'
+  s.dependency 'SJMediaCacheServer/KTVCocoaHTTPServer'
   s.dependency 'SJUIKit/SQLite3'
 end

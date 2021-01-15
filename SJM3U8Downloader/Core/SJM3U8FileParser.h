@@ -32,6 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
  
 - (void)writeContentsToFile:(NSString *)path error:(NSError **)error;
 
-- (nullable NSString *)tsfilenameAtIndex:(NSInteger)idx;
+- (nullable NSString *)TSFilenameAtIndex:(NSInteger)idx;
 @end
 NS_ASSUME_NONNULL_END

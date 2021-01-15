@@ -40,13 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resume {
     if ( SJM3U8DownloadListController.shared.count == 0 ) {
         NSArray<NSString *> *urls =
- @[@"http://hls.cntv.myalicdn.com/asp/hls/1200/0303000a/3/default/62d3dbaef5df4bfea6f44608d93a3f61/1200.m3u8",
-   @"http://hls.cntv.myalicdn.com/asp/hls/1200/0303000a/3/default/31d8d3b8ac6742e3a4f12c26ddbca4e3/1200.m3u8",
-   @"http://hls.cntv.myalicdn.com/asp/hls/main/0303000a/3/default/d38ed216975e421e81c64eb4111fe62a/main.m3u8?maxbr=2048",
-   @"http://hls.cntv.myalicdn.com/asp/hls/main/0303000a/3/default/4282066455d14cea8bc4b6a330853338/main.m3u8?maxbr=2048",
-   @"http://hls.cntv.myalicdn.com/asp/hls/main/0303000a/3/default/4aff1d9608e34eae89d1dca5853e394e/main.m3u8?maxbr=2048",
-   @"http://hls.cntv.myalicdn.com/asp/hls/main/0303000a/3/default/f8b43f1e5fc4472d8949924dce887eb1/main.m3u8?maxbr=2048",
-   @"http://hls.cntv.myalicdn.com/asp/hls/main/0303000a/3/default/0375c91ffa254de0b5105090058bda7a/main.m3u8?maxbr=2048"
+ @[@"http://hls.cntv.myalicdn.com/asp/hls/450/0303000a/3/default/bca293257d954934afadfaa96d865172/450.m3u8"
         ];
         
         for ( NSString *url in urls ) {
@@ -137,9 +131,12 @@ NS_ASSUME_NONNULL_BEGIN
                 if ( self.presentingViewController == nil ) {
 //                    http://hls.cntv.myalicdn.com/asp/hls/1200/0303000a/3/default/62d3dbaef5df4bfea6f44608d93a3f61/1200.m3u8
                     
-//                    NSString *url = [SJM3U8DownloadListController.shared localPlayUrlByUrl:item.url];
-//                    PlayerViewController *vc = [PlayerViewController.alloc initWithUrl:url];
-//                    [self presentViewController:vc animated:YES completion:nil];
+                    static dispatch_once_t onceToken;
+                    dispatch_once(&onceToken, ^{
+                        NSString *url = [SJM3U8DownloadListController.shared localPlayUrlByUrl:item.url];
+                        PlayerViewController *vc = [PlayerViewController.alloc initWithUrl:url];
+                        [self presentViewController:vc animated:YES completion:nil];
+                    });
                 }
             }
                 break;

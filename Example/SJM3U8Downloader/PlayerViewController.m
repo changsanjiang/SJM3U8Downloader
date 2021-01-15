@@ -7,11 +7,11 @@
 //
 
 #import "PlayerViewController.h"
-//#import <SJVideoPlayer/SJVideoPlayer.h>
-//#import <Masonry/Masonry.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface PlayerViewController ()
-//@property (nonatomic, strong, readonly) SJVideoPlayer *player;
+@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVPlayerLayer *playerLayer;
 @end
 
 @implementation PlayerViewController
@@ -19,20 +19,29 @@
 - (instancetype)initWithUrl:(NSString *)url {
     self = [super init];
     if ( self ) {
-//        _player = SJVideoPlayer.player;
-//        _player.assetURL = [NSURL URLWithString:url];
+        _player = [AVPlayer playerWithURL:[NSURL URLWithString:url]];
+        [_player play];
     }
     return self;
 }
 
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-//    [self.view addSubview:_player.view];
-//    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.edges.offset(0);
-//    }];
+    self.view.backgroundColor = UIColor.blackColor;
+    
+    _playerLayer = AVPlayerLayer.layer;
+    _playerLayer.player = _player;
+    [self.view.layer addSublayer:_playerLayer];
+    
     // Do any additional setup after loading the view.
 }
 
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    _playerLayer.frame = self.view.bounds;
+}
 @end

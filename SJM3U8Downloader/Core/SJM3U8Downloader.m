@@ -8,7 +8,7 @@
 
 #import "SJM3U8Downloader.h"
 #import <sys/xattr.h>
-#import <CocoaHTTPServer/HTTPServer.h>
+#import <SJMediaCacheServer/HTTPServer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 #define SJM3U8DownloaderFoldername(__url__) [NSString stringWithFormat:@"%lu", (unsigned long)__url__.hash]
@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) NSString *rootFolder; ///< 存放文件的根目录
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, SJM3U8TSDownloadOperationQueue *> *queues;
 @property (nonatomic, strong, readonly) HTTPServer *httpServer;
+@property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
+@property (nonatomic) UInt16 port;
+@property (nonatomic, strong) NSURL *serverURL;
 @end
 
 @implementation SJM3U8Downloader {
@@ -32,12 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithRootFolder:(NSString *)path {
-    return [self initWithRootFolder:path port:54321];
+    return [self initWithRootFolder:path port:12345];
 }
 
 - (instancetype)initWithRootFolder:(NSString *)path port:(UInt16)port {
     self = [super init];
     if ( self ) {
+        _port = port;
         _lock = dispatch_semaphore_create(1);
         _queues = NSMutableDictionary.dictionary;
         _rootFolder = path;
@@ -49,18 +53,18 @@ NS_ASSUME_NONNULL_BEGIN
             setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
         }
         
+        _backgroundTask = UIBackgroundTaskInvalid;
+        
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+
+        
         /// local server
         _httpServer = [HTTPServer new];
         [_httpServer setType:@"_http._tcp."];
         [_httpServer setPort:port];
         [_httpServer setDocumentRoot:path];
-        
-        NSError *error = nil;
-        if ( ![_httpServer start:&error] ) {
-#ifdef DEBUG
-            NSLog(@"本地服务器启动失败! %@", error);
-#endif
-        }
+        [self start];
     }
     return self;
 }
@@ -111,5 +115,70 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)localPlayUrlByFolderName:(NSString *)name {
     return [NSString stringWithFormat:@"http://127.0.0.1:%d/%@/index.m3u8", _httpServer.port, name];
 }
+
+#pragma mark - mark
+
+- (void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (BOOL)isRunning {
+    return _httpServer.isRunning;
+}
+
+- (void)start {
+    if ( self.isRunning )
+        return;
+    
+    for ( int i = 0 ; i < 10 ; ++ i ) {
+        if ( [self _start:NULL] ) {
+            _serverURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%d", _port]];
+            break;
+        }
+        [_httpServer setPort:_port += (UInt16)(arc4random() % 1000 + 1)];
+    }
+}
+
+- (void)stop {
+    [self _stop];
+}
+
+- (void)applicationDidEnterBackground {
+    [self _beginBackgroundTask];
+}
+
+- (void)applicationWillEnterForeground {
+    if ( self.backgroundTask == UIBackgroundTaskInvalid && !self.isRunning ) {
+        [self _start:nil];
+    }
+    [self _endBackgroundTask];
+}
+
+#pragma mark -
+
+- (BOOL)_start:(NSError **)error {
+    return [_httpServer start:error];
+}
+
+- (void)_stop {
+    [_httpServer stop];
+}
+
+- (void)_beginBackgroundTask {
+    if ( self.backgroundTask == UIBackgroundTaskInvalid ) {
+        self.backgroundTask = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            [self _stop];
+            [self _endBackgroundTask];
+        }];
+    }
+}
+
+- (void)_endBackgroundTask {
+    if ( self.backgroundTask != UIBackgroundTaskInvalid ) {
+        [UIApplication.sharedApplication endBackgroundTask:self.backgroundTask];
+        self.backgroundTask = UIBackgroundTaskInvalid;
+    }
+}
+
 @end
 NS_ASSUME_NONNULL_END

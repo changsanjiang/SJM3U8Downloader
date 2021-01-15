@@ -1,12 +1,5 @@
 PODS:
   - CocoaAsyncSocket (7.6.3)
-  - CocoaHTTPServer (2.3):
-    - CocoaAsyncSocket
-    - CocoaLumberjack
-  - CocoaLumberjack (3.6.0):
-    - CocoaLumberjack/Core (= 3.6.0)
-  - CocoaLumberjack/Core (3.6.0)
-  - MJRefresh (3.3.1)
   - SJDownloadDataTask (1.2.4):
     - SJDownloadDataTask/Core (= 1.2.4)
     - SJUIKit/ObserverHelper
@@ -15,100 +8,65 @@ PODS:
     - SJUIKit/ObserverHelper
   - SJDownloadDataTask/Core/ResourceLoader (1.2.4):
     - SJUIKit/ObserverHelper
-  - SJM3U8Downloader (0.0.1):
-    - CocoaHTTPServer
+  - SJM3U8Downloader (0.0.2):
     - SJDownloadDataTask
-    - SJM3U8Downloader/Core (= 0.0.1)
+    - SJM3U8Downloader/Core (= 0.0.2)
+    - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJM3U8Downloader/Core (0.0.1):
-    - CocoaHTTPServer
+  - SJM3U8Downloader/Core (0.0.2):
     - SJDownloadDataTask
+    - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJUIKit (0.0.0.39):
-    - SJUIKit/AsyncLoad (= 0.0.0.39)
-    - SJUIKit/AttributesFactory (= 0.0.0.39)
-    - SJUIKit/Base (= 0.0.0.39)
-    - SJUIKit/CornerMask (= 0.0.0.39)
-    - SJUIKit/Date (= 0.0.0.39)
-    - SJUIKit/ObserverHelper (= 0.0.0.39)
-    - SJUIKit/Other (= 0.0.0.39)
-    - SJUIKit/Photo (= 0.0.0.39)
-    - SJUIKit/Queues (= 0.0.0.39)
-    - SJUIKit/Refresh (= 0.0.0.39)
-    - SJUIKit/SQLite3 (= 0.0.0.39)
-    - SJUIKit/Thread (= 0.0.0.39)
-    - SJUIKit/UIMaker (= 0.0.0.39)
-  - SJUIKit/AsyncLoad (0.0.0.39):
-    - SJUIKit/CornerMask
-  - SJUIKit/AttributesFactory (0.0.0.39):
-    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.39)
-    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.39)
-  - SJUIKit/AttributesFactory/Deprecated (0.0.0.39)
-  - SJUIKit/AttributesFactory/UIKitText (0.0.0.39)
-  - SJUIKit/Base (0.0.0.39):
-    - SJUIKit/Base/Core (= 0.0.0.39)
+  - SJMediaCacheServer/KTVCocoaHTTPServer (1.3.4):
+    - CocoaAsyncSocket
+    - SJUIKit/SQLite3
+  - SJUIKit/AttributesFactory (0.0.0.52):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.52)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.52)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.52)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.52)
+  - SJUIKit/Base (0.0.0.52):
+    - SJUIKit/Base/Core (= 0.0.0.52)
     - SJUIKit/ObserverHelper
-  - SJUIKit/Base/Core (0.0.0.39):
+  - SJUIKit/Base/Core (0.0.0.52):
     - SJUIKit/ObserverHelper
-  - SJUIKit/CornerMask (0.0.0.39):
-    - SJUIKit/ObserverHelper
-  - SJUIKit/Date (0.0.0.39)
-  - SJUIKit/ObserverHelper (0.0.0.39)
-  - SJUIKit/Other (0.0.0.39):
-    - SJUIKit/Date
-  - SJUIKit/Photo (0.0.0.39)
-  - SJUIKit/Queues (0.0.0.39)
-  - SJUIKit/Refresh (0.0.0.39):
-    - MJRefresh
-  - SJUIKit/SQLite3 (0.0.0.39):
-    - SJUIKit/SQLite3/Core (= 0.0.0.39)
-    - SJUIKit/SQLite3/Protocol (= 0.0.0.39)
+  - SJUIKit/ObserverHelper (0.0.0.52)
+  - SJUIKit/SQLite3 (0.0.0.52):
+    - SJUIKit/SQLite3/Core (= 0.0.0.52)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.52)
     - YYModel
-  - SJUIKit/SQLite3/Core (0.0.0.39):
+  - SJUIKit/SQLite3/Core (0.0.0.52):
     - SJUIKit/SQLite3/Protocol
     - YYModel
-  - SJUIKit/SQLite3/Protocol (0.0.0.39):
+  - SJUIKit/SQLite3/Protocol (0.0.0.52):
     - YYModel
-  - SJUIKit/Thread (0.0.0.39)
-  - SJUIKit/UIMaker (0.0.0.39):
-    - SJUIKit/UIMaker/Core (= 0.0.0.39)
-  - SJUIKit/UIMaker/Core (0.0.0.39)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
   - SJM3U8Downloader (from `../`)
-  - SJUIKit (from `https://gitee.com/RongYaoTeam/SJUIKit.git`)
+  - SJUIKit/AttributesFactory
+  - SJUIKit/Base
 
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
-    - CocoaHTTPServer
-    - CocoaLumberjack
-    - MJRefresh
     - SJDownloadDataTask
+    - SJMediaCacheServer
+    - SJUIKit
     - YYModel
 
 EXTERNAL SOURCES:
   SJM3U8Downloader:
     :path: "../"
-  SJUIKit:
-    :git: https://gitee.com/RongYaoTeam/SJUIKit.git
-
-CHECKOUT OPTIONS:
-  SJUIKit:
-    :commit: b6e8e0f5e9e68420f9f4d6eaa64cdb53d8302697
-    :git: https://gitee.com/RongYaoTeam/SJUIKit.git
 
 SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
-  CocoaHTTPServer: 5624681fc3473d43b18202f635f9b3abb013b530
-  CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
-  MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
   SJDownloadDataTask: 3755925702cad1145c7d89180c50eeb8e78f38de
-  SJM3U8Downloader: ee869dad3d60b16e71e93ab99683457d6c63ecb4
-  SJUIKit: 15270b41d005b7d1c95b91aaf30832198ae46a42
+  SJM3U8Downloader: 2d42ab93312e2474d0f117f1a86cf11975d451a4
+  SJMediaCacheServer: f189e79b3d954b9c469e3022eb0b24b67d946104
+  SJUIKit: 8246b1001e616b0dbd090309fd58cdd609ae3fd4
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 04b324174c29e6c826d62e1e1f582e8a1eb86505
+PODFILE CHECKSUM: a2fde3f7d764b080176b3226f7fc9aa30bcbe7af
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.1

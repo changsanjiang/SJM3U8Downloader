@@ -214,7 +214,7 @@ NSNotificationName const SJM3U8TSDownloadOperationQueueProgressDidChangeNotifica
     NSMutableArray<SJM3U8TSDownloadOperation *> *m = [NSMutableArray arrayWithCapacity:self.fileParser.tsArray.count];
     __weak typeof(self) _self = self;
     [self.fileParser.tsArray enumerateObjectsUsingBlock:^(NSString * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *path = SJM3U8TSPath(self.folder, [self.fileParser tsfilenameAtIndex:idx]);
+        NSString *path = SJM3U8TSPath(self.folder, [self.fileParser TSFilenameAtIndex:idx]);
         SJM3U8TSDownloadOperation *operation = [SJM3U8TSDownloadOperation.alloc initWithURL:url toPath:path];
         operation.downalodCompletionHandler = ^(SJM3U8TSDownloadOperation * _Nonnull operation, NSError * _Nullable error) {
           __strong typeof(_self) self = _self;

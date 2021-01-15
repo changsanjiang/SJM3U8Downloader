@@ -2,7 +2,7 @@
 //  NSAttributedString+SJMake.m
 //  AttributesFactory
 //
-//  Created by BlueDancer on 2019/4/12.
+//  Created by 畅三江 on 2019/4/12.
 //  Copyright © 2019 SanJiang. All rights reserved.
 //
 
@@ -31,8 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sj_textSizeForPreferredMaxLayoutHeight:(CGFloat)height {
     return sj_textSize(self, CGFLOAT_MAX, height);
 }
-
-static CGSize sj_textSize(NSAttributedString *attrStr, CGFloat width, CGFloat height) {
+ 
+static CGSize
+sj_textSize(NSAttributedString *attrStr, CGFloat width, CGFloat height) {
     if ( attrStr.length < 1 )
         return CGSizeZero;
     CGRect bounds = [attrStr boundingRectWithSize:CGSizeMake(width, height) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];

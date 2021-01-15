@@ -1,4 +1,4 @@
-use_frameworks!
+#use_frameworks!
 
 platform :ios, '8.0'
 
@@ -19,7 +19,8 @@ end
 target 'SJM3U8Downloader_Example' do
   
   pod 'SJM3U8Downloader', :path => '../'
-  pod 'SJUIKit', :git => 'https://gitee.com/RongYaoTeam/SJUIKit.git'
+  pod 'SJUIKit/Base'
+  pod 'SJUIKit/AttributesFactory'
   
   target 'SJM3U8Downloader_Tests' do
     inherit! :search_paths
