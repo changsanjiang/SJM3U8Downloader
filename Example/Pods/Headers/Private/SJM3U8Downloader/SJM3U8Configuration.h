@@ -1,1 +1,1 @@
-../../../../../SJM3U8Downloader/SJM3U8Configuration.h
+../../../../../SJM3U8Downloader/Core/SJM3U8Configuration.h

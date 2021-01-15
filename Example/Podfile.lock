@@ -8,12 +8,12 @@ PODS:
     - SJUIKit/ObserverHelper
   - SJDownloadDataTask/Core/ResourceLoader (1.2.4):
     - SJUIKit/ObserverHelper
-  - SJM3U8Downloader (0.0.3):
+  - SJM3U8Downloader (0.0.4):
     - SJDownloadDataTask
-    - SJM3U8Downloader/Core (= 0.0.3)
+    - SJM3U8Downloader/Core (= 0.0.4)
     - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJM3U8Downloader/Core (0.0.3):
+  - SJM3U8Downloader/Core (0.0.4):
     - SJDownloadDataTask
     - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
@@ -62,7 +62,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   SJDownloadDataTask: 3755925702cad1145c7d89180c50eeb8e78f38de
-  SJM3U8Downloader: 001a8f682ccc920350567635c4132f716bb23055
+  SJM3U8Downloader: 7a224fe47a520853253c9e0273825a174567e3aa
   SJMediaCacheServer: f189e79b3d954b9c469e3022eb0b24b67d946104
   SJUIKit: 8246b1001e616b0dbd090309fd58cdd609ae3fd4
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
