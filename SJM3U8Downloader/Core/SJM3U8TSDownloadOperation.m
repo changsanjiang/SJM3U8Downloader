@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
         _downloadTask = [SJDownloadDataTask downloadWithURLStr:self.url toPath:[NSURL fileURLWithPath:self.path] append:YES response:^BOOL(SJDownloadDataTask * _Nonnull dataTask, NSURLResponse *response) {
             __strong typeof(_self) self = _self;
             if ( !self ) return NO;
-            BOOL allows = [response.MIMEType hasPrefix:@"video"] &&
+            BOOL allows = [response.MIMEType hasPrefix:@"video"] ||
                           [response.MIMEType hasPrefix:@"application/octet-stream"];
             
             if ( SJM3U8Configuration.shared.allowDownloads != nil ) {
