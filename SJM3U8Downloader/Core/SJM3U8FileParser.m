@@ -15,22 +15,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 // https://tools.ietf.org/html/rfc8216
 
-#define HLS_REGEX_INDEX     @".*\\.m3u8[^\\s]*"
-#define HLS_REGEX_TS        @"#EXTINF.+\\s(.+)\\s"
-#define HLS_REGEX_AESKEY    @"#EXT-X-KEY:METHOD=AES-128,URI=\"(.*)\""
+#define HLS_FORMAT_FIRST_LINE_TAG           @"#EXTM3U"
+     
+#define HLS_REGEX_INDEX                     @".*\\.m3u8[^\\s]*"
+#define HLS_REGEX_INDEX_2                   @"#EXT-X-STREAM-INF.+\\s(.+)\\s"
+#define HLS_REGEX_TS                        @"#EXTINF.+\\s(.+)\\s"
+#define HLS_REGEX_AESKEY                    @"#EXT-X-KEY:METHOD=AES-128,URI=\"(.*)\""
+#define HLS_REGEX_LOCAL_URIs                @"(.*\\.ts[^\\s]*)|(#EXT-X-KEY:METHOD=AES-128,URI=\"(.*)\")"
 
 #define HLS_INDEX_TS        1
 #define HLS_INDEX_AESKEY    1
+#define HLS_INDEX_INDEX_2   1
 
 #define HLS_SUFFIX_TS       @".ts"
 #define HLS_SUFFIX_AESKEY   @".key"
 
 @interface NSString (MCSRegexMatching)
-- (nullable NSArray<NSValue *> *)M3U8_rangesByMatchingPattern:(NSString *)pattern;
-- (nullable NSArray<NSTextCheckingResult *> *)M3U8_textCheckingResultsByMatchPattern:(NSString *)pattern;
-- (nullable NSString *)M3U8_filenameWithSuffix:(NSString *)suffix;
+- (nullable NSArray<NSValue *> *)m3u_rangesByMatchingPattern:(NSString *)pattern;
+- (nullable NSArray<NSTextCheckingResult *> *)m3u_textCheckingResultsByMatchPattern:(NSString *)pattern;
+- (nullable NSString *)m3u_filenameWithSuffix:(NSString *)suffix;
 @end
 
+@interface NSString (MCSHLSContents)
+- (nullable NSArray<NSString *> *)m3u_urlsByMatchingPattern:(NSString *)pattern contentsURL:(NSURL *)contentsURL;
+- (nullable NSArray<NSString *> *)m3u_urlsByMatchingPattern:(NSString *)pattern atIndex:(NSInteger)index contentsURL:(NSURL *)contentsURL;
+- (NSString *)m3u_convertToUrlByContentsURL:(NSURL *)contentsURL;
+@end
 
 @interface SJM3U8FileParser ()
 @property (nonatomic, copy) NSString *url;
@@ -58,13 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
             break;
 
         // 是否重定向
-        NSString *redirectUrl = [self _urlsWithPattern:HLS_REGEX_INDEX indexURL:curr.URL source:contents].firstObject;
-        if ( redirectUrl == nil ) break;
-        
-        curr = [NSURLRequest requestWithURL:[NSURL URLWithString:redirectUrl]];
+        // 是否重定向
+        NSString *next = [self _indexUrlForContents:contents contentsURL:curr.URL];
+        if ( next == nil ) break;
+
+        curr = [NSURLRequest requestWithURL:[NSURL URLWithString:next]];
     } while ( true );
     
-    if ( contents == nil || ![contents hasPrefix:@"#"] ) {
+    if ( contents == nil || ![contents hasPrefix:HLS_FORMAT_FIRST_LINE_TAG] ) {
         if ( error != NULL ) *error = SJM3U8FileParseError();
         return nil;
     }
@@ -73,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     /// #EXTINF:10,
     /// 000000.ts
     ///
-    NSArray<NSTextCheckingResult *> *tsResults = [contents M3U8_textCheckingResultsByMatchPattern:HLS_REGEX_TS];
+    NSArray<NSTextCheckingResult *> *tsResults = [contents m3u_textCheckingResultsByMatchPattern:HLS_REGEX_TS];
     if ( tsResults.count == 0 ) {
         if ( error != NULL ) *error = SJM3U8FileParseError();
         return nil;
@@ -86,28 +97,28 @@ NS_ASSUME_NONNULL_BEGIN
         NSRange range = [result rangeAtIndex:HLS_INDEX_TS];
         NSString *matched = [contents substringWithRange:range];
         // ts url
-        NSString *url = [self _urlWithURI:matched indexURL:curr.URL];
+        NSString *url = [matched m3u_convertToUrlByContentsURL:curr.URL];
         [tsArray addObject:url];
         
         // restructureContents
-        NSString *filename = [matched M3U8_filenameWithSuffix:HLS_SUFFIX_TS];
+        NSString *filename = [matched m3u_filenameWithSuffix:HLS_SUFFIX_TS];
         [restructureContents replaceCharactersInRange:range withString:filename];
     }];
     
     ///
     /// #EXT-X-KEY:METHOD=AES-128,URI="...",IV=...
     ///
-    [[restructureContents M3U8_textCheckingResultsByMatchPattern:HLS_REGEX_AESKEY] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSTextCheckingResult * _Nonnull result, NSUInteger idx, BOOL * _Nonnull stop) {
+    [[restructureContents m3u_textCheckingResultsByMatchPattern:HLS_REGEX_AESKEY] enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSTextCheckingResult * _Nonnull result, NSUInteger idx, BOOL * _Nonnull stop) {
         NSRange URIRange = [result rangeAtIndex:HLS_INDEX_AESKEY];
         // AESKEY
         NSString *URI = [restructureContents substringWithRange:URIRange];
-        NSString *url = [self _urlWithURI:URI indexURL:curr.URL];
+        NSString *url = [URI m3u_convertToUrlByContentsURL:curr.URL];
         NSData *keyData = [NSData dataWithContentsOfURL:[NSURL URLWithString:url] options:0 error:&inner_error];
         if ( inner_error != nil ) {
             *stop = YES;
             return ;
         }
-        NSString *filename = [URI M3U8_filenameWithSuffix:HLS_SUFFIX_AESKEY];
+        NSString *filename = [URI m3u_filenameWithSuffix:HLS_SUFFIX_AESKEY];
         [keyData writeToFile:[folder stringByAppendingPathComponent:filename] options:0 error:&inner_error];
         if ( inner_error != nil ) {
             *stop = YES;
@@ -176,57 +187,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)TSFilenameAtIndex:(NSInteger)idx {
     if ( idx < self.tsArray.count && idx >= 0 ) {
-        return [self.tsArray[idx] M3U8_filenameWithSuffix:HLS_SUFFIX_TS];
+        return [self.tsArray[idx] m3u_filenameWithSuffix:HLS_SUFFIX_TS];
     }
     return nil;
 }
 
-#pragma mark - mark
-
-+ (nullable NSArray<NSString *> *)_urlsWithPattern:(NSString *)pattern indexURL:(NSURL *)indexURL source:(NSString *)source {
-    NSMutableArray<NSString *> *m = NSMutableArray.array;
-    [[source M3U8_rangesByMatchingPattern:pattern] enumerateObjectsUsingBlock:^(NSValue * _Nonnull range, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *matched = [source substringWithRange:[range rangeValue]];
-        NSString *matchedUrl = [self _urlWithURI:matched indexURL:indexURL];
-        [m addObject:matchedUrl];
-    }];
-    
-    return m.count != 0 ? m.copy : nil;
++ (nullable NSString *)_indexUrlForContents:(NSString *)contents contentsURL:(NSURL *)contentsURL {
+    // 是否重定向
+    // 1
+    NSString *redirectUrl = [contents m3u_urlsByMatchingPattern:HLS_REGEX_INDEX contentsURL:contentsURL].firstObject;
+    // 2
+    if ( redirectUrl == nil ) {
+        redirectUrl = [contents m3u_urlsByMatchingPattern:HLS_REGEX_INDEX_2 atIndex:HLS_INDEX_INDEX_2 contentsURL:contentsURL].firstObject;
+    }
+    return redirectUrl;
 }
-
-+ (NSString *)_urlWithURI:(NSString *)matched indexURL:(NSURL *)indexURL {
-    static NSString *const HLS_PREFIX_LOCALHOST = @"http://localhost";
-    static NSString *const HLS_PREFIX_PATH = @"/";
-    
-    NSString *url = nil;
-    if ( [matched hasPrefix:HLS_PREFIX_PATH] ) {
-        url = [NSString stringWithFormat:@"%@://%@%@", indexURL.scheme, indexURL.host, matched];
-    }
-    else if ( [matched hasPrefix:HLS_PREFIX_LOCALHOST] ) {
-        url = [NSString stringWithFormat:@"%@://%@%@", indexURL.scheme, indexURL.host, [matched substringFromIndex:HLS_PREFIX_LOCALHOST.length]];
-    }
-    else if ( [matched containsString:@"://"] ) {
-        url = matched;
-    }
-    else {
-        url = [NSString stringWithFormat:@"%@/%@", indexURL.absoluteString.stringByDeletingLastPathComponent, matched];
-    }
-    return url;
-}
-
 @end
 
 
 
 @implementation NSString (MCSRegexMatching)
-- (nullable NSArray<NSValue *> *)M3U8_rangesByMatchingPattern:(NSString *)pattern {
+- (nullable NSArray<NSValue *> *)m3u_rangesByMatchingPattern:(NSString *)pattern {
     NSMutableArray<NSValue *> *m = NSMutableArray.array;
-    for ( NSTextCheckingResult *result in [self M3U8_textCheckingResultsByMatchPattern:pattern])
+    for ( NSTextCheckingResult *result in [self m3u_textCheckingResultsByMatchPattern:pattern])
         [m addObject:[NSValue valueWithRange:result.range]];
     return m.count != 0 ? m.copy : nil;
 }
 
-- (nullable NSArray<NSTextCheckingResult *> *)M3U8_textCheckingResultsByMatchPattern:(NSString *)pattern {
+- (nullable NSArray<NSTextCheckingResult *> *)m3u_textCheckingResultsByMatchPattern:(NSString *)pattern {
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:kNilOptions error:NULL];
     NSMutableArray<NSTextCheckingResult *> *m = NSMutableArray.array;
     [regex enumerateMatchesInString:self options:kNilOptions range:NSMakeRange(0, self.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
@@ -237,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
     return m.count != 0 ? m.copy : nil;
 }
 
-- (nullable NSString *)M3U8_filenameWithSuffix:(NSString *)suffix {
+- (nullable NSString *)m3u_filenameWithSuffix:(NSString *)suffix {
     NSString *filename = self.lastPathComponent;
     NSRange range = [filename rangeOfString:@"?"];
     if ( range.location != NSNotFound ) {
@@ -249,4 +237,42 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@implementation NSString (MCSHLSContents)
+- (nullable NSArray<NSString *> *)m3u_urlsByMatchingPattern:(NSString *)pattern contentsURL:(NSURL *)contentsURL {
+    return [self m3u_urlsByMatchingPattern:pattern atIndex:0 contentsURL:contentsURL];
+}
+
+- (nullable NSArray<NSString *> *)m3u_urlsByMatchingPattern:(NSString *)pattern atIndex:(NSInteger)index contentsURL:(NSURL *)contentsURL {
+    NSMutableArray<NSString *> *m = NSMutableArray.array;
+    [[self m3u_textCheckingResultsByMatchPattern:pattern] enumerateObjectsUsingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        The range at index 0 always matches the range property.  Additional ranges, if any, will have indexes from 1 to numberOfRanges-1. rangeWithName: can be used with named regular expression capture groups
+        NSRange range = [obj rangeAtIndex:index];
+        NSString *matched = [self substringWithRange:range];
+        NSString *url = [matched m3u_convertToUrlByContentsURL:contentsURL];
+        [m addObject:url];
+    }];
+    return m.count != 0 ? m.copy : nil;
+}
+
+/// 将路径转换为url
+- (NSString *)m3u_convertToUrlByContentsURL:(NSURL *)URL {
+    static NSString *const HLS_PREFIX_LOCALHOST = @"http://localhost";
+    static NSString *const HLS_PREFIX_PATH = @"/";
+    
+    NSString *url = nil;
+    if ( [self hasPrefix:HLS_PREFIX_PATH] ) {
+        url = [NSString stringWithFormat:@"%@://%@%@", URL.scheme, URL.host, self];
+    }
+    else if ( [self hasPrefix:HLS_PREFIX_LOCALHOST] ) {
+        url = [NSString stringWithFormat:@"%@://%@%@", URL.scheme, URL.host, [self substringFromIndex:HLS_PREFIX_LOCALHOST.length]];
+    }
+    else if ( [self containsString:@"://"] ) {
+        url = self;
+    }
+    else {
+        url = [NSString stringWithFormat:@"%@/%@", URL.absoluteString.stringByDeletingLastPathComponent, self];
+    }
+    return url;
+}
+@end
 NS_ASSUME_NONNULL_END
